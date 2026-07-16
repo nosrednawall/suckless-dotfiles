@@ -252,7 +252,7 @@ if [ "$ONLY_CONFIG" = false ]; then
     sudo pacman -S --noconfirm "${PACKAGES_DEPENDENCIES_WALRS[@]}" || die "Failed to install walrs build tools"
 
     # Enable services
-    sudo systemctl enable avahi-daemon acpid NetworkManager ly bluetooth wireplumber docker
+    sudo systemctl enable avahi-daemon acpid NetworkManager ly@ttyX.service bluetooth wireplumber
 
     # Disable system mpd service and enable user mpd service
     sudo systemctl disable mpd
