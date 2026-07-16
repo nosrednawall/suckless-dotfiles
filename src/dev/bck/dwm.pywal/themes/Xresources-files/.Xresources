@@ -1,0 +1,9 @@
+#include "/home/anderson/.cache/wal/colors-dwm.Xresources"
+!#include "/home/anderson/.cache/wal/colors.Xresources"
+Xcursor.theme:Capitaine Cursors (Gruvbox) - White
+Xcursor.size: 16
+
+
+
+dwmblocks.foreground: #ff0000
+dwmblocks.background: #0000ff

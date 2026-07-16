@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+diretorio="$HOME/.config/suckless/assets/audio/"
+
+# Encontra todos os arquivos MP3 no diretório
+arquivos_mp3=("$diretorio"/*.mp3)
+
+# Seleciona um arquivo aleatório
+arquivo_aleatorio="${arquivos_mp3[RANDOM % ${#arquivos_mp3[@]}]}"
+
+# Toca o arquivo MP3
+echo "Tocando: $(basename "$arquivo_aleatorio")"
+ffplay -nodisp -autoexit -t 5 "$arquivo_aleatorio" &

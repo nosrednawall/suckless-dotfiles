@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Diretório onde estão seus scripts
+SCRIPTS_DIR="$HOME/.config/suckless/scripts/dmenu/"
+
+# Verifica se o diretório existe
+if [ ! -d "$SCRIPTS_DIR" ]; then
+    echo "Erro: Diretório $SCRIPTS_DIR não encontrado!"
+    exit 1
+fi
+
+# Verifica se o dmenu está instalado
+if ! command -v dmenu &> /dev/null; then
+    echo "Erro: dmenu não está instalado!"
+    echo "Instale com: sudo apt install dmenu  # (Debian/Ubuntu)"
+    echo "ou: sudo pacman -S dmenu            # (Arch)"
+    exit 1
+fi
+
+# Lista todos os scripts executáveis no diretório
+scripts=$(find "$SCRIPTS_DIR" -maxdepth 1 -type f -executable -printf "%f\n" | sort)
+
+# Verifica se existem scripts
+if [ -z "$scripts" ]; then
+    notify-send "Menu Scripts" "Nenhum script encontrado em $SCRIPTS_DIR"
+    exit 1
+fi
+
+# Mostra o dmenu com a lista de scripts
+escolha=$(echo "$scripts" | dmenu -i -l 10 -p "Escolha um script:")
+
+# Se o usuário selecionou algo, executa
+if [ -n "$escolha" ]; then
+    script_path="$SCRIPTS_DIR/$escolha"
+    
+    # Executa o script em um terminal (opcional, dependendo do tipo de script)
+    if [[ "$escolha" == *.sh ]] || [[ "$escolha" == *.py ]]; then
+        # Para scripts que precisam de terminal
+        if command -v xterm &> /dev/null; then
+            xterm -e "$script_path"
+        elif command -v gnome-terminal &> /dev/null; then
+            gnome-terminal -- "$script_path"
+        else
+            # Executa diretamente se não encontrar terminal
+            "$script_path"
+        fi
+    else
+        # Executa scripts que não precisam de terminal
+        "$script_path" &
+    fi
+    
+    # Notifica que o script foi executado (opcional)
+    notify-send "Menu Scripts" "Executando: $escolha"
+fi

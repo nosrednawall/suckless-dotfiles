@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+
+case "$BUTTON" in
+    1) mpc -q toggle
+       ~/.local/bin/mpd/songinfo
+       ;;
+    2) mpc -q prev
+       ~/.local/bin/mpd/songinfo
+    ;;
+    3) mpc -q next
+       ~/.local/bin/mpd/songinfo
+       ;;
+    4) mpc -q seek +5 ;;
+    5) mpc -q seek -5 ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+    8) xsetroot -name "fsignal:togglescratch ui 6" ;;
+esac
+
+# Ícones para a música tocando e pausada
+icon="^c#2aa198^󰝚"
+paused_icon="^c#b58900^"
+
+# Verifica o estado do MPD (tocando, pausado ou parado)
+status="$(mpc status | grep '\[playing\]')"
+
+if [ -n "$status" ]; then
+    # Se estiver tocando, usa o ícone de música
+    song="$(mpc current --format="%title%")"
+else
+    # Se estiver pausado, usa o ícone de pausa
+    [ "$(mpc status "%state%")" = "paused" ] && icon="$paused_icon"
+    song="$(mpc current --format="%title%")"
+fi
+
+# Se não houver música, sai do script
+[ -z "$song" ] && exit
+
+# Limita o título da música a 30 caracteres
+song="${song:0:30}"
+
+# Exibe o ícone e a música
+echo "$icon ^d^$song  "

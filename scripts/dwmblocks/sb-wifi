@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# Carrega o tema
+source $HOME/.theme_selected
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Identifica os devices de rede do sistema
+DEVICE_WIFI=$(ls /sys/class/net/ | grep "wl" | awk '{print $1}')
+
+# funcoes cliclaveis
+case $BUTTON in
+    1) xsetroot -name "fsignal:togglescratch ui 2" ;;
+    3) bash ~/.config/suckless/scripts/dmenu/dmenu-vpn ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+    8)
+        myip=$(ip -f inet address | grep inet | grep -v 'lo$' | cut -d ' ' -f 6,13 && curl ifconfig.me && echo ' external ip')
+        notify-send "Ips atuais" "$myip" --icon "$THEME_ICON_DUNST/64x64/devices/network-modem.svg"
+    ;;
+esac
+
+
+# Verifica se o wifi existe
+if [ -e /sys/class/net/$DEVICE_WIFI/operstate ]; then
+
+    # Verifica se o wifi esta ligado
+    status_wifi=$(cat /sys/class/net/$DEVICE_WIFI/operstate | grep "up" -ic)
+else
+    status_wifi=0
+fi
+
+signal_level=$(iwconfig $DEVICE_WIFI | grep -i 'Signal level' | awk -F '=' '{print $3}' | awk '{print $1}')
+
+case $signal_level in
+    -[2-5][0-9])  # -30 dBm a -50 dBm
+        icon="󰤨"  # Muito bom
+        ;;
+    -[5-6][0-9])  # -51 dBm a -60 dBm
+        icon="󰤥"  # Bom
+        ;;
+    -[6-7][0-9])  # -61 dBm a -70 dBm
+        icon="󰤢"  # Médio
+        ;;
+    -[7-8][0-9])  # -71 dBm a -80 dBm
+        icon="󰤟"  # Ruim
+        ;;
+    -[8-9][0-9]|-1[0-9][0-9])  # -81 dBm ou menos
+        icon="󰤯"  # Muito ruim ou desconectado
+        ;;
+    *)
+        icon="󰤮"  # Desconhecido ou sem sinal
+        ;;
+esac
+
+if [ $status_wifi -eq 1 ]; then
+    # nesse caso eu preferi pular o primeiro resultado, e separar dois, depois pego o ultimo
+    #wifiname=$(nmcli -t -f NAME connection show --active | grep -vE '^(Conexão cabeada 1|lo|docker0|nordlynx|tailscale0)$')
+    wifiname=$(nmcli -t -f NAME,TYPE connection show --active | awk -F: '$2 == "802-11-wireless" {print $1}')
+    ip=$(ip addr show $DEVICE_WIFI  | grep 'inet' | awk '{print$2}' | sed 's/\/[0-9]*//' | head -1)
+
+    wifi=$(aplicar_tema "$icon" "$wifiname" "$COLOR_2" "$COLOR_10")
+    #wifi="^b$COLOR_2^^c$COLOR_BACKGROUND^ $icon ^d^^c$COLOR_BACKGROUND^^b$COLOR_10^ $wifiname ^d^ "
+else
+    wifi=$(aplicar_tema "$icon" "" "#4A5947" "#4A5947")
+#    wifi="^b#4A5947^^c$COLOR_BACKGROUND^ $icon ^d^ "
+fi
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        echo "$wifi"
+    ;;
+esac

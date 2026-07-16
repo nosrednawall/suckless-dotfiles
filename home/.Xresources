@@ -1,0 +1,100 @@
+! ==========================================
+! Tema gerado dinamicamente
+! ==========================================
+
+! Cores base
+*background: COLOR_BACKGROUND_PLACEHOLDER
+*background2: COLOR_BACKGROUND2_PLACEHOLDER
+*foreground: COLOR_TEXT_PLACEHOLDER
+
+! Cores principais (1-16)
+*color0: COLOR_BACKGROUND_PLACEHOLDER
+*color1: COLOR_1_PLACEHOLDER
+*color2: COLOR_2_PLACEHOLDER
+*color3: COLOR_3_PLACEHOLDER
+*color4: COLOR_4_PLACEHOLDER
+*color5: COLOR_5_PLACEHOLDER
+*color6: COLOR_6_PLACEHOLDER
+*color7: COLOR_TEXT_PLACEHOLDER
+*color8: COLOR_BACKGROUND2_PLACEHOLDER
+*color9: COLOR_9_PLACEHOLDER
+*color10: COLOR_10_PLACEHOLDER
+*color11: COLOR_11_PLACEHOLDER
+*color12: COLOR_12_PLACEHOLDER
+*color13: COLOR_13_PLACEHOLDER
+*color14: COLOR_14_PLACEHOLDER
+*color15: COLOR_15_PLACEHOLDER
+*color16: COLOR_16_PLACEHOLDER
+
+! ==========================================
+! CORES COMPLETAS DO DWM
+! ==========================================
+
+! Esquema Normal
+dwm.normfgcolor: NORMFGCOLOR_PLACEHOLDER
+dwm.normbgcolor: NORMBGCOLOR_PLACEHOLDER
+dwm.normbordercolor: NORMBORDERCOLOR_PLACEHOLDER
+dwm.normfloatcolor: NORMFLOATCOLOR_PLACEHOLDER
+
+! Esquema Selecionado
+dwm.selfgcolor: SELFGCOLOR_PLACEHOLDER
+dwm.selbgcolor: SELBGCOLOR_PLACEHOLDER
+dwm.selbordercolor: SELBORDERCOLOR_PLACEHOLDER
+dwm.selfloatcolor: SELFLOATCOLOR_PLACEHOLDER
+
+! Título Normal
+dwm.titlenormfgcolor: TITLENORMFGCOLOR_PLACEHOLDER
+dwm.titlenormbgcolor: TITLENORMBGCOLOR_PLACEHOLDER
+dwm.titlenormbordercolor: TITLENORMBORDERCOLOR_PLACEHOLDER
+dwm.titlenormfloatcolor: TITLENORMFLOATCOLOR_PLACEHOLDER
+
+! Título Selecionado
+dwm.titleselfgcolor: TITLESELFGCOLOR_PLACEHOLDER
+dwm.titleselbgcolor: TITLESELBGCOLOR_PLACEHOLDER
+dwm.titleselbordercolor: TITLESELBORDERCOLOR_PLACEHOLDER
+dwm.titleselfloatcolor: TITLESELFLOATCOLOR_PLACEHOLDER
+
+! Tags Normal
+dwm.tagsnormfgcolor: TAGSNORMFGCOLOR_PLACEHOLDER
+dwm.tagsnormbgcolor: TAGSNORMBGCOLOR_PLACEHOLDER
+dwm.tagsnormbordercolor: TAGSNORMBORDERCOLOR_PLACEHOLDER
+dwm.tagsnormfloatcolor: TAGSNORMFLOATCOLOR_PLACEHOLDER
+
+! Tags Selecionado
+dwm.tagsselfgcolor: TAGSSELFGCOLOR_PLACEHOLDER
+dwm.tagsselbgcolor: TAGSSELBGCOLOR_PLACEHOLDER
+dwm.tagsselbordercolor: TAGSSELBORDERCOLOR_PLACEHOLDER
+dwm.tagsselfloatcolor: TAGSSELFLOATCOLOR_PLACEHOLDER
+
+! Tags Não Utilizadas
+dwm.tagsunusedfgcolor: TAGSUNUSEDFGCOLOR_PLACEHOLDER
+dwm.tagsunusedbgcolor: TAGSUNUSEDBGCOLOR_PLACEHOLDER
+dwm.tagsunusedbordercolor: TAGSUNUSEDBORDERCOLOR_PLACEHOLDER
+dwm.tagsunusedfloatcolor: TAGSUNUSEDFLOATCOLOR_PLACEHOLDER
+
+! Esquema Oculto
+dwm.hidnormfgcolor: HIDNORMFGCOLOR_PLACEHOLDER
+dwm.hidnormbgcolor: HIDNORMBGCOLOR_PLACEHOLDER
+dwm.hidselfgcolor: HIDSELFGCOLOR_PLACEHOLDER
+dwm.hidselbgcolor: HIDSELBGCOLOR_PLACEHOLDER
+
+! Esquema Urgente
+dwm.urgfgcolor: URFGFGCOLOR_PLACEHOLDER
+dwm.urgbgcolor: URGBGCOLOR_PLACEHOLDER
+dwm.urgbordercolor: URGBORDERCOLOR_PLACEHOLDER
+dwm.urgfloatcolor: URGLOATCOLOR_PLACEHOLDER
+
+! Símbolo do Layout
+dwm.ltsymbolfgcolor: LTSYMBOLFGCOLOR_PLACEHOLDER
+dwm.ltsymbolbgcolor: LTSYMBOLBGCOLOR_PLACEHOLDER
+
+! Cores individuais das tags (para compatibilidade)
+dwm.tag1: COLOR_1_PLACEHOLDER
+dwm.tag2: COLOR_2_PLACEHOLDER
+dwm.tag3: COLOR_3_PLACEHOLDER
+dwm.tag4: COLOR_4_PLACEHOLDER
+dwm.tag5: COLOR_5_PLACEHOLDER
+dwm.tag6: COLOR_6_PLACEHOLDER
+dwm.tag7: COLOR_7_PLACEHOLDER
+dwm.tag8: COLOR_8_PLACEHOLDER
+dwm.tag9: COLOR_9_PLACEHOLDER

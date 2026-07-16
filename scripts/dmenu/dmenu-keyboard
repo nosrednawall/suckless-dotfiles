@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+br_abnt2="󰌌 br ABNT2"
+us_intl="󰌌 us Internacional"
+us_altgr_intl="󰌌 us Internacional Com AltGr"
+
+# Variable passed to dmenu
+options="$br_abnt2\n$us_intl\n$us_altgr_intl"
+
+chosen="$(echo -e "$options" | dmenu -p "Atalho de Programas" )"
+case $chosen in
+	 $br_abnt2)
+        layout="br"
+        variante="abnt2"
+    ;;
+    $us_intl)
+        layout="us"
+        variante="intl"
+        ;;
+    # Layout atual: us-intl
+    $us_altgr_intl)
+        layout="us"
+        variante="altgr-intl"
+        ;;
+esac
+
+# Verifica se foi escolhido alguma opção, caso contrário não faz nada
+if [[ -z $chosen ]]; then
+    exit 0
+
+else
+    # Aplica o novo layout e variante
+    setxkbmap -model pc105 -layout "$layout" -variant "$variante"
+
+    # Notifica o usuário
+    notify-send -t 3000 "󰌌 Keyboard $layout-$variante" \
+        "Alterado o teclado para o layout $layout-$variante" \
+        --icon="/usr/share/icons/ePapirus/16x16/devices/keyboard.svg"
+fi
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Carrega o percentual usado
+percent_used=$(df -h / | awk 'NR==2 {gsub(/%/,"",$5); print $5}')
+
+disk_usage=$(aplicar_tema "󰋊" "$percent_used" $COLOR_5 $COLOR_13)
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        echo ""
+    ;;
+    *)
+    echo "$disk_usage"
+    ;;
+esac

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+carregador="Carregador  "
+bateria="Bateria  "
+
+# Variable passed to dmenu
+options="$carregador\n$bateria"
+
+chosen="$(echo -e "$options" | dmenu -p "Selecione o modo de operação do PowerTop" )"
+case $chosen in
+    $carregador)
+	SUDO_ASKPASS=/usr/bin/ssh-askpass sudo ~/.local/bin/powertop_reset.sh
+	notify-send -t 3000 "Powertop Modo Carregador" "Alterado o perfil do powertop para o modo carregador" --icon="/usr/share/icons/ePapirus/16x16/devices/computer-laptop.svg"
+	;;
+
+    $bateria)
+	SUDO_ASKPASS=/usr/bin/ssh-askpass sudo ~/.local/bin/powertop_start.sh
+    notify-send -t 3000 "Powertop Modo Bateria" "Alterado o perfil do powertop para o modo bateria" --icon="/usr/share/icons/ePapirus/16x16/devices/computer-laptop.svg"
+	;;
+esac

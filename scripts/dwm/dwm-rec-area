@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Verifica se o `slop` está instalado
+if ! command -v slop &> /dev/null; then
+    echo "O 'slop' não está instalado. Por favor, instale-o antes de usar este script."
+    exit 1
+fi
+
+PID_FILE="/tmp/rec_pid"
+
+# Verificar se há gravação em andamento
+if [[ -f $PID_FILE && -s $PID_FILE ]]; then
+    rec_pid=$(cat "$PID_FILE")
+    if kill -0 "$rec_pid" 2>/dev/null; then
+        # Perguntar ao usuário se deseja encerrar a gravação
+        choice=$(printf "Sim\nNão\n" | dmenu -p "Gravação em andamento. Deseja encerrar?")
+        if [[ "$choice" == "Sim" ]]; then
+            kill -SIGINT "$rec_pid" && rm -f "$PID_FILE"
+            notify-send -h string:fgcolor:$COLOR_3 " Gravação encerrada." --icon="/usr/share/icons/ePapirus/24x24/panel/kazam-stopped.svg"
+            kill -45 $(pidof dwmblocks)
+        fi
+        exit 0
+    else
+        # Remove PID inválido
+        rm -f "$PID_FILE"
+    fi
+fi
+
+
+# Obtém a área de seleção com o `slop`
+AREA=$(slop -f "%x %y %w %h") || exit 1
+
+# Extrai as coordenadas e dimensões
+read -r X Y WIDTH HEIGHT <<< "$AREA"
+
+# Diretório e nome do arquivo de saída
+OUTPUT_DIR="$HOME/Vídeos/rec"
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_FILE="$OUTPUT_DIR/video_$(date +'%Y-%m-%d_%H-%M-%S').mp4"
+
+# Comando para gravar apenas a área selecionada
+ffmpeg -video_size "${WIDTH}x${HEIGHT}" -framerate 30 -f x11grab -i :0.0+"${X},${Y}" \
+    -f pulse -i $(pactl list sources short | grep monitor | awk '{print $2}' | grep $(pactl get-default-sink)) \
+    -c:v h264 -qp 0 "$OUTPUT_FILE" &
+
+# Salvar PID e monitorar processo
+echo $! > "$PID_FILE"
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)
+
+exit 0

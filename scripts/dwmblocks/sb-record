@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Display an indicator during screen records.
+camera=$(lsmod | grep "uvcvideo" | awk '{print$3}' | head -1)
+PID_FILE="/tmp/rec_pid"
+
+# Inicia a variavel de retorno
+iconCam=""
+iconRec=""
+icon=""
+output=""
+
+if [ "$camera" = "1" ]; then
+	iconCam=""
+fi
+
+# Verificar se há gravação em andamento
+if [ -f $PID_FILE ] && [ -s $PID_FILE ]; then
+ 	iconRec="󰑊"
+fi
+
+# Mostra o icone conforme a necessidade
+if [ ! -z $iconCam ] && [ ! -z $iconRec ]; then
+    icon=" $iconCam $iconRec "
+else
+    if [ ! -z $iconRec ]; then
+        icon=" $iconRec "
+    else
+        icon=" $iconCam "
+    fi
+fi
+
+## Verifica se tem algum dos dois icones preenchidos, caso sim faz a formatação da saida
+if [ ! -z $iconCam ] || [ ! -z $iconRec ]; then
+    output=$(aplicar_tema "$icon" "" "$COLOR_2" "$COLOR_2")
+fi
+
+echo "$output"
+exit 0

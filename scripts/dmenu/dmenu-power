@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+shutdown=" Shutdown"
+reboot=" Reboot"
+logout=" Logout"
+suspend="Suspend"
+hibernate="Hibernate"
+
+# Variable passed to rofi
+options="$shutdown\n$reboot\n$logout\n$suspend\n$hibernate"
+
+chosen="$(echo -e "$options" | dmenu -p "Power-Menu " )"
+case $chosen in
+    $shutdown)
+        SUDO_ASKPASS=/usr/bin/ssh-askpass sudo -A systemctl poweroff
+        ;;
+    $reboot)
+        SUDO_ASKPASS=/usr/bin/ssh-askpass sudo -A systemctl reboot
+        ;;
+    $logout)
+        # Método mais seguro e amplamente compatível
+        if command -v loginctl >/dev/null; then
+            loginctl terminate-user $USER
+        else
+            # Fallback: encerrar sessão grafica
+            pkill -15 -t $(ps -o tty= -p $$ | sed 's/^\///')
+        fi
+        ;;
+    $suspend)
+        SUDO_ASKPASS=/usr/bin/ssh-askpass sudo -A systemctl suspend
+        ;;
+    $hibernate)
+        SUDO_ASKPASS=/usr/bin/ssh-askpass sudo -A systemctl hibernate
+        ;;
+esac

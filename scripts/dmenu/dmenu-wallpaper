@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Diretório de wallpapers
+DIR="$HOME/.wallpapers"
+
+# Verifica se o diretório existe
+if [ ! -d "$DIR" ]; then
+    echo "Diretório de wallpapers não encontrado: $DIR"
+    exit 1
+fi
+
+# Usa o sxiv para selecionar wallpapers e salva a seleção no arquivo temporário
+walls=$(sxiv -t -o -r -g 1800x650 "$DIR" | xargs)
+
+# Verifica se alguma imagem foi selecionada
+if [ -z "$walls" ]; then
+    echo "Nenhuma imagem selecionada."
+    exit 0
+fi
+
+echo "$walls"
+
+# Aplica o(s) wallpaper(s) selecionado(s) com o feh
+$HOME/.config/suckless/scripts/others/tema-aplicar "pywal" $walls

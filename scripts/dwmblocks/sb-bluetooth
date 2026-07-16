@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# Carrega informacoes do modo de operacao
+arquivo_modo="$HOME/.cache/dwmblocks_modo_operacao"
+
+if [ -f $arquivo_modo ]; then
+    source $arquivo_modo
+else
+    OPERATION_MODE="COMPLETO"
+fi
+
+# Carrega as cores do tema
+source ~/.theme_selected
+
+STATUS_BLUETOOTH=$(bluetoothctl show | grep "Powered:" | grep -E "yes$" -ic)
+
+if [ $STATUS_BLUETOOTH -eq 1 ]; then
+    CONNECTED_BLUETOOTH=$(bluetoothctl show | grep "Pairable:" | grep -E "yes$" -ic)
+
+    if [ $CONNECTED_BLUETOOTH -eq 1 ]; then
+        ICON="󰂱"
+    else
+        ICON="󰂯"
+    fi
+    STATUS_ICON="^c$COLOR_2^$ICON^d^"
+else
+    ICON="󰂲"
+    STATUS_ICON="^c#4A5947^$ICON^d^"
+fi
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        echo "$STATUS_ICON  "
+    ;;
+esac
+
+# Funções clicáveis
+case $BUTTON in
+    1)
+        STATUS_BLUETOOTH=$(bluetoothctl show | grep "Powered:" | grep -E "yes$" -ic)
+
+        if [ $STATUS_BLUETOOTH -eq 1 ]; then
+            ACAO="off"
+        else
+            ACAO="on"
+        fi
+        bluetoothctl power $ACAO
+        notify-send "Bluetooth Mode" "Power $ACAO"
+    ;;
+    2)
+        STATUS_BLUETOOTH=$(bluetoothctl show | grep "Pairable:" | grep -E "yes$" -ic)
+
+        if [ $STATUS_BLUETOOTH -eq 1 ]; then
+            ACAO="off"
+        else
+            ACAO="on"
+        fi
+        bluetoothctl pairable $ACAO
+        notify-send "Bluetooth Mode" "Pairable $ACAO"
+    ;;
+    3) blueman-manager ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac

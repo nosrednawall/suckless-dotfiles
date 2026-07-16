@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Carrega o tema
+source $HOME/.theme_selected
+
+# Identifica os devices de rede do sistema
+DEVICE_WIFI=$(ls /sys/class/net/ | grep "wlp" | awk '{print $1}')
+DEVICE_ETHERNET=$(ls /sys/class/net/ | grep "enp" | awk '{print $1}')
+
+# Verifica se o ethernet existe
+if [ -e /sys/class/net/$DEVICE_ETHERNET/operstate ]; then
+
+    # Verifica se o ethernet esta ligado
+    status_ethernet=$(cat /sys/class/net/$DEVICE_ETHERNET/operstate | grep "up" -ic)
+else
+    status_ethernet=0
+fi
+
+if [ $status_ethernet -eq 1 ]; then
+    ip=$(ip addr show $DEVICE_ETHERNET  | grep 'inet' | awk '{print$2}' | sed 's/\/[0-9]*//' | head -1)
+    # ethernet="^b$COLOR_6^^c$COLOR_BACKGROUND^ 󰈀 ^d^^c$COLOR_BACKGROUND^^b$COLOR_14^ $ip ^d^ "
+    ethernet=$(aplicar_tema "󰈀" "$ip" $COLOR_6 $COLOR_14)
+else
+    ethernet=""
+fi
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        echo ""
+    ;;
+    *)
+    echo "$ethernet"
+    ;;
+esac
+
+# funcoes cliclaveis
+case $BUTTON in
+   # 1) bash ~/.dotfiles/.local/bin/dwm/toggle_wifi.sh ;;
+    1)
+        myip=$(ip -f inet address | grep inet | grep -v 'lo$' | cut -d ' ' -f 6,13 && curl ifconfig.me && echo ' external ip')
+        notify-send "Ips atuais" "$myip" --icon "$THEME_ICON_DUNST/64x64/devices/network-modem.svg"
+    ;;
+    3) bash ~/.dotfiles/.local/bin/dmenu/dmenu-vpn ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac

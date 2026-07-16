@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Try different fan sensors
+FAN_SPEED=$(sensors | awk '/^fan|^cpu_fan/ {print $2" "$3}')
+[ -z "$FAN_SPEED" ] && FAN_SPEED="N/A"
+
+# Pega Temperatura wifi
+WIFI_TEMP=$(sensors | grep 'iwlwifi_1-virtual-0' -A 2 | grep 'temp1' | awk '{print $2}')
+[ -z "$WIFI_TEMP" ] && WIFI_TEMP="N/A"
+
+NVME_PCI_0200_TEMP=$(sensors | grep 'nvme-pci-0200' -A 2 | grep 'Composite' | awk '{print $2}')
+[ -z "$NVME_PCI_0200_TEMP" ] && NVME_PCI_0200_TEMP="N/A"
+
+NVME_PCI_0300_TEMP=$(sensors | grep 'nvme-pci-0300' -A 2 | grep 'Composite' | awk '{print $2}')
+[ -z "$NVME_PCI_0300_TEMP" ] && NVME_PCI_0300_TEMP="N/A"
+
+
+# Try different GPU temperature sensors (AMD and NVIDIA), if not found, return N/A
+if command -v nvidia-smi >/dev/null 2>&1; then
+    # NVIDIA GPU
+    GPU_TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader)
+else
+    # AMD GPU
+    GPU_TEMP=""
+fi
+
+[ -z "$GPU_TEMP" ] && GPU_TEMP="N/A"
+
+
+# Captura a temperatura do CPU (verifica se "sensors" retorna resultado)
+tempCpu=$(sensors 2>/dev/null | awk '/edge/ {print $2}' | sed 's/+//')
+if [ -z "$tempCpu" ]; then
+    tempCpu="" # Substituto caso sensores não estejam disponíveis
+fi
+
+# Lê o estado atual do CPU
+read cpu a b c previdle rest < /proc/stat
+prevtotal=$((a+b+c+previdle))
+
+# Aguarda 0.5 segundos
+sleep 0.5
+
+# Lê o estado do CPU novamente
+read cpu a b c idle rest < /proc/stat
+total=$((a+b+c+idle))
+
+# Calcula o uso do CPU
+if [ $((total-prevtotal)) -ne 0 ]; then
+    usageCpu=$((100 * ((total-prevtotal) - (idle-previdle)) / (total-prevtotal)))
+else
+    usageCpu=0
+fi
+
+icon=""
+
+# Define a cor do ícone baseado no uso do CPU
+if [ "$usageCpu" -le 10 ]; then
+    cor_forte=$COLOR_7
+    cor_fraca=$COLOR_15
+    
+elif [ "$usageCpu" -le 40 ]; then
+    cor_forte=$COLOR_1
+    cor_fraca=$COLOR_9
+
+elif [ "$usageCpu" -le 60 ]; then
+    cor_forte=COLOR_2
+    cor_fraca=COLOR_10
+    
+elif [ "$usageCpu" -le 100 ]; then
+    cor_forte=COLOR_3
+    cor_fraca=COLOR_11
+    
+else
+    cor_forte=COLOR_7
+    cor_fraca=COLOR_15
+fi
+
+output=$(aplicar_tema $icon $usageCpu $cor_forte $cor_fraca)
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        echo "$output"
+    ;;
+    *)
+        echo "$output"
+    ;;
+esac
+
+
+# funcoes cliclaveis
+case $BUTTON in
+    1) notify-send -t 10000 -h string:bgcolor:$COLOR Stats " CPU:$usageCpu% $tempCpu\n GPU Nvidia: $GPU_TEMP°C\n WIFI: $WIFI_TEMP\n SSD1: $NVME_PCI_0200_TEMP\n SSD2: $NVME_PCI_0300_TEMP" ;;
+    2) st -n "htop"  -e "htop"  &>/dev/null & ;;
+    3) xsetroot -name "fsignal:togglescratch ui 4" ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+exit 0

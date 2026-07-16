@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+flameshot  gui -p $HOME/Imagens/Screenshoots/ -c
+#flatpak run org.flameshot.Flameshot gui -p $HOME/Imagens/Screenshoots/ -c

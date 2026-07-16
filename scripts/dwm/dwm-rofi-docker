@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Diretório base onde estão as pastas com docker-compose.yml
+BASE_DIR="$HOME/git/Biblioteca_Scripts/Docker"
+
+# Função para listar pastas com docker-compose.yml
+list_docker_folders() {
+    find "$BASE_DIR" -type f -name "docker-compose.yml" | sed 's|/docker-compose.yml||g'
+}
+
+# Função para verificar o status dos contêineres
+check_container_status() {
+    local folder="$1"
+    local status=$(docker-compose -f "$folder/docker-compose.yml" ps --status running | wc -l)
+
+    # O 1 é referente à primeira linha do retorno do comando, que é o cabeçalho, logo se tiver apenas 1 o serviço não está funcionando
+    if [[ $status -eq 1 ]]; then
+        echo "DOWN $folder"
+    else
+        echo "UP $folder"
+    fi
+}
+
+# Gera a lista de pastas com status
+generate_menu() {
+    for folder in $(list_docker_folders); do
+        check_container_status "$folder"
+    done
+}
+
+# Executa o rofi e obtém a seleção do usuário
+selected=$(generate_menu | rofi -dmenu -l 10 -p "Docker Compose:" | awk '{print $2}')
+
+# Verifica se uma seleção foi feita
+if [[ -n "$selected" ]]; then
+    # Verifica o status do contêiner selecionado
+    status=$(docker-compose -f "$selected/docker-compose.yml" ps --status running | wc -l)
+
+    if [[ $status -eq 1 ]]; then
+        # Se estiver parado, inicia o contêiner
+        docker-compose -f "$selected/docker-compose.yml" up -d
+        notify-send "Docker Compose" "Contêiner em $selected foi iniciado."
+
+        # Monta as URLs
+        urls=$(docker-compose -f "$selected/docker-compose.yml" ps --status running \
+            | awk '{print $11}' \
+            | grep -oP '\d+->\d+' \
+            | awk -F'->' '{print "http://localhost:" $1}')
+
+        # Abre as URLs no navegador
+        echo "$urls" | /usr/bin/xargs -I {} bash -c '/usr/bin/x-www-browser {} &'
+    else
+        # Se estiver em execução, para o contêiner
+        docker-compose -f "$selected/docker-compose.yml" down
+        notify-send "Docker Compose" "Contêiner em $selected foi parado."
+    fi
+fi
+
+exit 0

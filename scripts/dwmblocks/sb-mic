@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Lê o nome da distribuição a partir do arquivo /etc/os-release
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        arch)
+            MICROFONE="pcm0c"
+            ;;
+
+        debian)
+            MICROFONE="pcm3p"
+            ;;
+        *)
+            echo "Sistema desconhecido ou não suportado: $ID"
+            ;;
+    esac
+else
+    echo "Não foi possível determinar a distribuição. O arquivo /etc/os-release não existe."
+fi
+
+# funcoes cliclaveis
+case $BUTTON in
+	1) bash ~/.config/suckless/scripts/dwm/dwm-muta-microfone ;;
+    2) bash ~/.config/suckless/scripts/dmenu/dmenu-controle-som ;;
+    3) xsetroot -name "fsignal:togglescratch ui 6" ;;
+    4) bash ~/.config/suckless/scripts/dwm/dwm-aumenta-volume-microfone ;;
+    5) bash ~/.config/suckless/scripts/dwm/dwm-diminui-volume-microfone ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+# Display an icon if the microphone is muted.
+microfone=$(pactl get-source-volume @DEFAULT_SOURCE@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+muteMic=$(pactl get-source-mute @DEFAULT_SOURCE@ | grep -E 'sim|yes' -ic)
+device=$(pactl get-default-source)
+
+case "$device" in
+    *pci*analog*)      device="" ;;   # placa on-board
+    *usb*Headset*)     device="󰋎" ;;   # fone USB
+    *bluez*input*)     device="" ;;   # Via bluetooth
+    *usb*)             device="󰕓" ;;   # qualquer outro USB
+    *)                 device="?" ;;
+esac
+
+
+if [ "$muteMic" -eq 1 ]; then
+    icon=""
+    cor_forte="#4A5947"
+    cor_fraca="#4A5947"
+    microfone=""
+    device=""
+    corpo=""
+else
+    icon=" $device"
+    cor_forte=$COLOR_4
+    cor_fraca=$COLOR_12
+    corpo="$microfone"
+fi
+
+
+output=$(aplicar_tema "$icon" "$corpo" "$cor_forte" "$cor_fraca")
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        echo "$output"
+    ;;
+esac
+
+exit 0;

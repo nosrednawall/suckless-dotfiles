@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# funcoes cliclaveis
+case $BUTTON in
+   # 1) bash ~/.dotfiles/.local/bin/dwm/toggle_wifi.sh ;;
+    1) xsetroot -name "fsignal:togglescratch ui 5" ;;
+    3) bash ~/.dotfiles/.local/bin/dmenu/dmenu-vpn ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+status=$(cat /sys/class/net/wlp5s0/operstate | grep "up" -ic)
+
+if [ $status -eq 1 ]; then
+    ip=$(ip addr show wlp5s0  | grep 'inet' | awk '{print$2}' | sed 's/\/[0-9]*//' | head -1)
+    wifiname=$(nmcli -t -f NAME connection show --active | grep -E "[^Conexão cabeada 1]" | head -1)
+    wifi="^c#b58900^ ^d^$wifiname  "
+else
+    wifi=""
+fi
+
+echo "$wifi"

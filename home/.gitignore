@@ -1,0 +1,44 @@
+# Compiled
+*.elc
+
+# Packaging
+.cask
+
+# Backup files
+*~
+
+# Undo-tree save-files
+*.~undo-tree
+
+*#
+
+# Compiled
+*.elc
+
+# Packaging
+.cask
+
+# Backup files
+*~
+
+# Undo-tree save-files
+*.~undo-tree
+
+ac-comphist.dat  
+backups    
+eln-cache  
+elpy     
+ido.last  
+myinit.el   
+places                    
+projects  
+snippets
+auto-save-list   
+custom.el  
+elpa       
+history  
+#init.el   
+#myinit.org  
+projectile-bookmarks.eld  
+recentf   
+transient

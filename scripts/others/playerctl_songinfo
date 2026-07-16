@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Diretórios e configuraçõe
+source ~/.cache/playerctl_selecionado
+music_dir="$HOME/Músicas"
+previewdir="$HOME/.cache/playerctl/previews"
+mkdir -p "$previewdir"
+
+# Obtém informações da música atual usando playerctl
+title="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{title}}')"
+artist="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{artist}}')"
+album="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{album}}')"
+cover_url="$(playerctl  --player=$PLAYER_SELECIONADO metadata --format '{{mpris:artUrl}}')"
+
+# Nome do arquivo da prévia baseado no nome do álbum (codificado em base64)
+previewname="$previewdir/$(echo "$album$title$artist" | base64).png"
+
+# Faz o download da imagem do álbum, se ela ainda não existir
+if [ ! -e "$previewname" ] && [ -n "$cover_url" ]; then
+    # Transforma URL do MPRIS para o formato acessível
+    if echo "$cover_url" | grep -q '^file://'; then
+        cover_path="${cover_url#file://}"
+        cp "$cover_path" "$previewname"
+    else
+        curl -sL "$cover_url" -o "$previewname"
+    fi
+
+    # Ajusta o tamanho da imagem
+    #[ -e "$previewname" ] && convert "$previewname" -resize 512x512 "$previewname"
+    [ -e "$previewname" ] && magick "$previewname" -resize 512x512 "$previewname"
+fi
+
+# Atualiza dwmblocks
+# kill -35 "$(pidof dwmblocks)"
+
+# Envia notificação
+notify-send -r 27072 "Now Playing" "$title\n$artist - $album" -i "$previewname"

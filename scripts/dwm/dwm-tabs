@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+# dwm-tabs - Tab management for dwm (adapted from bspwm-tabs)
+
+TABBED="$HOME/.config/suckless/tabbed/tabbed"
+CLASS="dwm-tabbed"
+
+# Check if a window is a tabbed container
+is_tab() {
+    [ -n "$1" ] && xprop -id "$1" WM_CLASS 2>/dev/null | grep -q "\"$CLASS\""
+}
+
+# Get focused window
+get_focused() {
+    xdotool getactivewindow 2>/dev/null
+}
+
+# Get all visible windows
+get_all_windows() {
+    xdotool search --name "." 2>/dev/null
+}
+
+# Create new tabbed container
+create() {
+    local xid=$([ -x "$TABBED" ] && "$TABBED" -d -c -n "$CLASS" 2>/dev/null || tabbed -d -c -n "$CLASS" 2>/dev/null)
+    local id=$((xid))
+    [ "$id" -gt 0 ] && { sleep 0.15; xdotool windowfocus "$id" 2>/dev/null; echo "$id"; }
+}
+
+# Attach a window to a tabbed container
+attach() {
+    [ -z "$1" ] || [ -z "$2" ] || is_tab "$1" && return 1
+    xdotool windowunmap "$1" windowreparent "$1" "$2" windowmap "$1" 2>/dev/null
+    sleep 0.1
+    xdotool windowfocus "$2" 2>/dev/null
+}
+
+# Find existing tabbed container on current workspace
+find_tab() {
+    local wid
+    for wid in $(get_all_windows); do
+        is_tab "$wid" && echo "$wid" && return
+    done
+}
+
+# Attach focused window to tabs
+do_attach() {
+    local f=$(get_focused)
+    [ -z "$f" ] && { echo "No focused window"; return 1; }
+
+    # If focused window is already a tab container, do nothing
+    if is_tab "$f"; then
+        echo "Focused window is already a tab container"
+        return 0
+    fi
+
+    # Find existing tab container or create new one
+    local t=$(find_tab)
+    if [ -z "$t" ]; then
+        echo "Creating new tab container..."
+        t=$(create)
+        [ -z "$t" ] && { echo "Failed to create tab container"; return 1; }
+    fi
+
+    # Attach focused window to tab container
+    echo "Attaching window $f to tab container $t"
+    sleep 0.2
+    attach "$f" "$t"
+}
+
+# Detach window from tabs
+do_detach() {
+    local f=$(get_focused)
+    local root=$(xwininfo -root 2>/dev/null | awk '/Window id:/ {print $4}')
+    [ -z "$f" ] && { echo "No focused window"; return 1; }
+
+    local child parent
+
+    # Check if focused window is a tab container
+    if is_tab "$f"; then
+        # Get first child window
+        child=$(xwininfo -id "$f" -children 2>/dev/null | awk '/^ +0x/ {print $1; exit}')
+        parent=$f
+    else
+        # Get parent window
+        parent=$(xwininfo -id "$f" -tree 2>/dev/null | awk '/Parent window/ {print $4}')
+        parent=$((parent))
+
+        # Check if parent is a tab container
+        if is_tab "$parent"; then
+            child=$f
+        else
+            echo "Focused window is not in a tab container"
+            return 1
+        fi
+    fi
+
+    # If no children, close the empty tab container
+    [ -z "$child" ] && {
+        echo "Closing empty tab container"
+        xdotool windowkill "$parent" 2>/dev/null
+        return 0
+    }
+
+    # Detach child from tab container
+    child=$((child))
+    echo "Detaching window $child from tab container"
+    xdotool windowunmap "$child" windowreparent "$child" "$root" windowmap "$child" 2>/dev/null
+    sleep 0.1
+    xdotool windowfocus "$child" 2>/dev/null
+
+    # Close tab container if no more children
+    local child_count=$(xwininfo -id "$parent" -children 2>/dev/null | grep -c '^ \+0x')
+    [ "$child_count" -le 0 ] && {
+        echo "Closing empty tab container"
+        xdotool windowkill "$parent" 2>/dev/null
+    }
+}
+
+# Main command dispatcher
+case "${1:-attach}" in
+    attach)
+        do_attach
+        ;;
+    detach)
+        do_detach
+        ;;
+    create)
+        create
+        ;;
+    *)
+        echo "Usage: dwm-tabs {attach|detach|create}"
+        exit 1
+        ;;
+esac

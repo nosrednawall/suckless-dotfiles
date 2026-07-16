@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Carrega o tema
+source $HOME/.theme_selected
+
+# Obtém o layout e a variante atual
+layout_atual=$(setxkbmap -query | awk '/layout/ {print $2}')
+variante_atual=$(setxkbmap -query | awk '/variant/ {print $2}')
+
+# Para caso de 3 ou mais layouts
+# Define os layouts e variantes para alternar
+#case "$layout_atual-$variante_atual" in
+    # Layout atual: br-abnt2
+#    "br-abnt2"|"br-")
+#        layout="us"
+#        variante="intl"
+#        ;;
+    # Layout atual: us-intl
+#    "us-intl")
+#        layout="us"
+#        variante="altgr-intl"
+#        ;;
+    # Layout atual: us-altgr-intl
+#    "us-altgr-intl")
+#        layout="br"
+#        variante="abnt2"
+#        ;;
+    # Padrão: usa layout brasileiro
+#    *)
+#        layout="br"
+#        variante="abnt2"
+#        ;;
+#esac
+
+# Simplifiquei para 2 leyouts
+if [ $layout_atual = "br" ]; then
+    layout="us"
+	variante="altgr-intl"
+else
+    layout="br"
+    variante="abnt2"
+fi
+
+# Aplica o novo layout e variante
+setxkbmap -model pc105 -layout "$layout" -variant "$variante"
+
+# Notifica o usuário
+notify-send -t 3000 "󰌌  Keyboard $layout-$variante" \
+    "Alterado o teclado para o layout $layout-$variante" \
+    --icon="$THEME_ICON_DUNST/16x16/devices/keyboard.svg"
+
+# Atualiza dwmblocks
+kill -46 $(pidof dwmblocks)

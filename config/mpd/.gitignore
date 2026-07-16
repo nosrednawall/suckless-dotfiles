@@ -1,0 +1,8 @@
+*mpd.pid
+*mpd.log
+*mpdstate
+*socket
+*mod.fifo
+*mpd.db
+*database
+*mpd.fifo

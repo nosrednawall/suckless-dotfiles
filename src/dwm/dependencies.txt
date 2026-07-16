@@ -1,0 +1,48 @@
+archlinux
+
+sudo pacman -S libxinerama libxft libxcb libxext imlib2
+
+nixos
+
+{ config, pkgs, lib, ... }:
+
+let
+# Bibliotecas dos pacotes
+#
+  baseLibs = with pkgs; [
+    makeWrapper
+  ];
+
+  dwmLibs = with pkgs; [
+      libXinerama
+      libXft
+      libxcb
+      libXext
+      imlib2
+  ];
+
+
+  # Gera o pacote myDwm
+  myDwm = pkgs.dwm.overrideAttrs (old: {
+    src = ../suckless/dwm;
+    buildInputs = baseLibs ++ dwmLibs;
+
+  });
+
+in
+{
+# Desabilita o slock do nixos
+  programs.slock.enable = false;
+
+  services.xserver = {
+    enable = true;
+    xkb.layout = "us";
+
+    windowManager.dwm = {
+      enable = true;
+      package = myDwm;
+    };
+
+    displayManager.lightdm.enable = true;
+  };
+}

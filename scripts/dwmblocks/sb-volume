@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Display volume levels.
+case $BUTTON in
+	1) bash ~/.config/suckless/scripts/dwm/dwm-muta-volume ;;
+    2) bash ~/.config/suckless/scripts/dmenu/dmenu-controle-som ;;
+    #3) setsid -f st -e pulsemixer ;;
+    3) xsetroot -name "fsignal:togglescratch ui 6" ;;
+    4) bash ~/.config/suckless/scripts/dwm/dwm-aumenta-volume ;;
+    5) bash ~/.config/suckless/scripts/dwm/dwm-diminui-volume ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+device=$(pactl get-default-sink)
+muteVol=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -E 'sim|yes' -ic)
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+
+cor_forte="$COLOR_6"
+cor_fraca="$COLOR_14"
+
+case "$device" in
+    *pci*analog*)      device="󰓃" ;;   # placa on-board
+    *usb*Headset*)     device="󰋎" ;;   # fone USB
+    *pci*hdmi*)        device="󰡁" ;;   # hdmi
+    *bluez*output*)    device="" ;;   # Via bluetooth
+    *)                 device="?" ;;   # Qualquer outro
+esac
+
+
+if [ "$muteVol" -eq 1 ]; then
+    iconVolumeCompleto="󰸈"
+    cor_forte="#4A5947"
+    cor_fraca="#4A5947"
+    device=""
+    volume=""
+    corpo=""
+else
+    if [ "$volume" -le 30 ]; then
+        iconVolume="󰕿"
+    elif [ "$volume" -le 60 ]; then
+        iconVolume="󰖀"
+    elif [ "$volume" -ge 61 ]; then
+        iconVolume="󰕾"
+    fi
+    iconVolumeCompleto="$iconVolume $device"
+    corpo="$volume"
+fi
+
+
+output=$(aplicar_tema "$iconVolumeCompleto" "$corpo" "$cor_forte" "$cor_fraca")
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        echo "$output"
+    ;;
+esac
+
+exit 0

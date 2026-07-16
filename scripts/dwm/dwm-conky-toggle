@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+source ~/.theme_selected
+
+# Verifica se o Conky está rodando
+if pgrep -x "conky" > /dev/null
+then
+    # Se estiver rodando, mata o processo
+    pkill conky
+else
+    # Se não estiver rodando, inicia o Conky
+    if [ $COLOR_MODE == "Dark" ]; then
+        conky -c ~/.dotfiles/.config/conky/conky_atalhos_dark.conf &> /dev/null &
+        #conky -c ~/.dotfiles/.config/conky/Kurhah/Kurhah.conf &> /dev/null &
+        conky -c ~/.dotfiles/.config/conky/conky_emacs.conf &> /dev/null &
+    else
+        conky -c ~/.dotfiles/.config/conky/conky_atalhos_light.conf &> /dev/null &
+        conky -c ~/.dotfiles/.config/conky/Kurhah/Kurhah-light.conf &> /dev/null &
+    fi
+fi

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+data=$(date +%Y-%m-%d_%H:%M:%S)
+arquivo="/Imagens/Screenshoots/"
+
+maim -s $HOME$arquivo$data.png
+xclip -selection clipboard -t image/png $HOME$arquivo$data.png
+
+notify-send -t 8000 "Print Capturado" "Arquivo salvo em: $HOME$arquivo$data.png" -i $HOME$arquivo$data.png

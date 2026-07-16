@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+source ~/.theme_selected
+arquivo=$(echo ~/.config/rofi/themes/${THEME_MODE}_${COLOR_MODE}.rasi | tr '[:upper:]' '[:lower:]')
+# rofi -m -4 -modi 'window,drun,ssh,combi' -font 'CaskaydiaMono Nerd Font 14' -show drun -icon-theme 'Papirus-Dark' -show-icons -theme 'solarized' -sidebar-mode
+rofi -m -4 -modi 'window,drun,ssh,combi' -font 'CaskaydiaMono Nerd Font 14' -show drun -icon-theme '$THEME_ICON' -show-icons -theme $arquivo

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Display disk usage for `/`
+
+percent_used=$(df -h | grep -E '[/]$' | awk '{print$5}' | sed 's/%//')
+echo "^c#6c71c4^󰋊 ^d^$percent_used󰏰  "

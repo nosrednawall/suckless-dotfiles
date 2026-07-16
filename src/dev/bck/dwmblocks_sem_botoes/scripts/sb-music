@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Display currently playing music.
+
+set -- --player=spotify,mpv,%any
+icon="^c#2aa198^󰝚"
+paused_icon="^c#b58900^"
+if status="$(playerctl "$@" status 2>&1)" && [ "$status" != "Stopped" ]; then
+    [ "$status" = "Paused" ] && icon="$paused_icon"
+
+    #song="$(playerctl "$@" metadata --format="{{title}} - {{artist}}")"
+    song="$(playerctl "$@" metadata --format="{{title}}")"
+else
+   [ "$(mpc status "%state%")" = "paused" ] && icon="$paused_icon"
+   #song="$(mpc current --format="%title%[ - %artist%]")"
+   song="$(mpc current --format="%title%")"
+fi
+
+[ -z "$song" ] && exit
+
+song="${song:0:30}"
+
+echo "$icon ^d^$song  "

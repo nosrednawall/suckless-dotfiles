@@ -1,0 +1,81 @@
+#Btop Vaporwave Light Theme
+#by Anderson José de Souza Inácio
+
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]="#f2f2f2"
+
+# Main text color
+theme[main_fg]="#4a4a6a"
+
+# Title color for boxes
+theme[title]="#ff66cc"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#00cccc"
+
+# Background color of selected items
+theme[selected_bg]="#dcdce7"
+
+# Foreground color of selected items
+theme[selected_fg]="#ff9933"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#9a9aba"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#ff99ff"
+
+# Cpu box outline color
+theme[cpu_box]="#9966cc"
+
+# Memory/disks box outline color
+theme[mem_box]="#9966cc"
+
+# Net up/down box outline color
+theme[net_box]="#9966cc"
+
+# Processes box outline color
+theme[proc_box]="#9966cc"
+
+# Box divider line and small boxes line color
+theme[div_line]="#9966cc"
+
+# Temperature graph colors
+theme[temp_start]="#ff99cc"
+theme[temp_mid]="#ff66b2"
+theme[temp_end]="#ff3399"
+
+# CPU graph colors
+theme[cpu_start]="#66cccc"
+theme[cpu_mid]="#33cccc"
+theme[cpu_end]="#00cccc"
+
+# Mem/Disk free meter
+theme[free_start]="#66b2ff"
+theme[free_mid]=""
+theme[free_end]="#3399ff"
+
+# Mem/Disk cached meter
+theme[cached_start]="#b299ff"
+theme[cached_mid]=""
+theme[cached_end]="#d9b3ff"
+
+# Mem/Disk available meter
+theme[available_start]="#ffcc66"
+theme[available_mid]=""
+theme[available_end]="#ffb266"
+
+# Mem/Disk used meter
+theme[used_start]="#ff6666"
+theme[used_mid]=""
+theme[used_end]="#ff3333"
+
+# Download graph colors
+theme[download_start]="#66ccff"
+theme[download_mid]="#99e6ff"
+theme[download_end]="#b3e6ff"
+
+# Upload graph colors
+theme[upload_start]="#e699ff"
+theme[upload_mid]="#ffccff"
+theme[upload_end]="#ffebff"

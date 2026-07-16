@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+integrado=" Integrado"
+hdmi="󰡁 Hdmi"
+headset_redragon="󰋎 Headset Redragon"
+microfone_integrado=" Mic Notebook"
+microfone_headset_redragon=" Mic Redragon"
+
+# Variable passed to dmenu
+options="$hdmi\n$integrado\n$headset_redragon\n$microfone_integrado\n$microfone_headset_redragon"
+
+chosen="$(echo -e "$options" | dmenu -p "Scripts de controle de som " )"
+case $chosen in
+    $integrado)
+	pactl set-default-sink alsa_output.pci-0000_06_00.6.analog-stereo
+	notify-send -t 3000 "Audio via Integrado" "Alterado saída principal para o audio integrado do notebook" --icon="/usr/share/icons/ePapirus/16x16/devices/computer-laptop.svg"
+	;;
+    $hdmi)
+	pactl set-default-sink alsa_output.pci-0000_01_00.1.hdmi-stereo
+	notify-send -t 3000 "Audio via HDMI" "Alterado a saida de audio principal para o HDMI" --icon="/usr/share/icons/ePapirus/16x16/devices/audio-speakers.svg"
+	;;
+    $headset_redragon)
+	pactl set-default-sink alsa_output.usb-C-Media_Electronics_Inc._Redragon_Gaming_Headset-00.analog-stereo
+	pactl set-default-source alsa_input.usb-C-Media_Electronics_Inc._Redragon_Gaming_Headset-00.mono-fallback
+	notify-send -t 3000 "Audio e Microfone ReDragon" "Alterado a saida de audio e o microfone padão para o headset ReDragon" --icon="/usr/share/icons/ePapirus/16x16/devices/audio-headphones.svg"
+	;;
+    $microfone_integrado)
+	pactl set-default-source alsa_input.pci-0000_06_00.6.analog-stereo
+	notify-send -t 3000 "Microfone Integrado" "Alterado o microfone padrão para o integrado" --icon="/usr/share/icons/ePapirus/16x16/devices/audio-input-microphone.svg"
+	;;
+    $microfone_headset_redragon)
+	pactl set-default-source alsa_input.usb-C-Media_Electronics_Inc._Redragon_Gaming_Headset-00.mono-fallback
+	notify-send -t 3000 "Microfone ReDragon" "Alterado o microfone padrão para o Headset ReDragon"  --icon="/usr/share/icons/ePapirus/16x16/devices/audio-input-microphone.svg"
+	;;
+esac
+kill -10 $(pidof dwmblocks)

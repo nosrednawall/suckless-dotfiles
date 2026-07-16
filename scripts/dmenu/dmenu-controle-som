@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+update_dwmblocks() {
+    kill -10 $(pidof dwmblocks)
+}
+
+
+# Função para atualizar dispositivos dinamicamente
+update_devices() {
+    declare -gA sinks sources
+    sinks=()
+    sources=()
+
+    # Extrai a descrição e o nome de cada sink (saída de áudio)
+    while IFS= read -r line; do
+        if [[ $line =~ Name:\ ([^\ ]+) ]]; then
+            current_sink_name="${BASH_REMATCH[1]}"
+        elif [[ $line =~ Description:\ (.+) ]]; then
+            sinks["$current_sink_name"]="${BASH_REMATCH[1]}"
+        fi
+    done < <(pactl list sinks)
+
+    # Extrai a descrição e o nome de cada source (entrada de áudio)
+    while IFS= read -r line; do
+        if [[ $line =~ Name:\ ([^\ ]+) ]]; then
+            current_source_name="${BASH_REMATCH[1]}"
+        elif [[ $line =~ Description:\ (.+) ]]; then
+            sources["$current_source_name"]="${BASH_REMATCH[1]}"
+        fi
+    done < <(pactl list sources)
+}
+
+# Atualiza os dispositivos antes de exibir o menu
+update_devices
+
+# Verifica se encontrou dispositivos
+if [[ ${#sinks[@]} -eq 0 && ${#sources[@]} -eq 0 ]]; then
+    notify-send "Erro" "Nenhum dispositivo de áudio encontrado."
+    exit 1
+fi
+
+# Constrói as opções dinamicamente
+options="Dispositivos de Saída: \n"
+for sink in "${!sinks[@]}"; do
+    options+="  󰕾 ${sinks[$sink]} (Saída)\n"
+done
+
+options+="\nDispositivos de Entrada: \n"
+for source in "${!sources[@]}"; do
+    if [[ "${sources[$source]}" == "Monitor"* ]]; then  # Verifica se a string COMEÇA com "Monitor"
+        continue  # Pula esta entrada
+    fi
+    options+="   ${sources[$source]} (Entrada)\n"
+done
+
+# Mostra as opções no dmenu
+chosen="$(echo -e "$options" | dmenu -p "Escolha dispositivo de áudio")"
+
+# Verifica se algo foi selecionado
+if [[ -z "$chosen" ]]; then
+    notify-send "Nenhuma alteração" "Nenhum dispositivo selecionado."
+    exit 0
+fi
+
+# Altera o dispositivo padrão com base na seleção
+for sink in "${!sinks[@]}"; do
+    if [[ "  󰕾 ${sinks[$sink]} (Saída)" == "$chosen" ]]; then
+        pactl set-default-sink "$sink"
+        update_dwmblocks
+        notify-send " 󰕾  Áudio alterado" "Saída padrão: ${sinks[$sink]}" --icon="/usr/share/icons/ePapirus/16x16/devices/audio-speakers.svg"
+        exit 0
+    fi
+done
+
+for source in "${!sources[@]}"; do
+    if [[ "   ${sources[$source]} (Entrada)" == "$chosen" ]]; then
+        pactl set-default-source "$source"
+        update_dwmblocks
+        notify-send "   Microfone alterado" "Entrada padrão: ${sources[$source]}"  --icon="/usr/share/icons/ePapirus/16x16/devices/audio-input-microphone.svg"
+        exit 0
+    fi
+done
+
+# Mensagem caso nenhum dispositivo corresponda
+update_dwmblocks
+notify-send "Erro" "Dispositivo selecionado não encontrado."

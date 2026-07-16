@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+### Softwares necessarios
+### dmenu, ffmpeg, notify-send, dunst, slop, xrandr
+
+### Pul
+
+# Tema
+source ~/.theme_selected
+
+# Arquivo para armazenar PID do processo de gravação
+PID_FILE="/tmp/rec_pid"
+
+# Devices de audio em formato de parametros para o ffmpeg
+MICROFONE_PRINCIPAL="-f pulse -i $(pactl get-default-source)"
+AUDIO_COPUTADOR_PRINCIPAL="-f pulse -i $(pactl list sources short | grep monitor | awk '{print $2}' | grep $(pactl get-default-sink))"
+
+# Função para listar telas disponíveis
+list_screens() {
+    xrandr --query | grep " connected" | while read -r line; do
+        screen=$(echo "$line" | awk '{print $1}')
+        resolution=$(echo "$line" | grep -oP '\d{3,}x\d{3,}\+\d+\+\d+')
+        echo "$screen - $resolution"
+    done
+    echo "Tela Selecionada Sem Audio"
+    echo "Tela Selecionada Com Audio"
+    echo "Tela Selecionada em Gif"
+}
+
+# Verificar se há gravação em andamento
+if [[ -f $PID_FILE && -s $PID_FILE ]]; then
+    rec_pid=$(cat "$PID_FILE")
+    if kill -0 "$rec_pid" 2>/dev/null; then
+        # Perguntar ao usuário se deseja encerrar a gravação
+        choice=$(printf "Sim\nNão\n" | dmenu -p "Gravação em andamento. Deseja encerrar?")
+        if [[ "$choice" == "Sim" ]]; then
+            kill -SIGINT "$rec_pid" && rm -f "$PID_FILE"
+            notify-send -h string:fgcolor:$COLOR_3 " Gravação encerrada." --icon="/usr/share/icons/ePapirus/24x24/panel/kazam-stopped.svg"
+            kill -10 $(pidof dwmblocks)
+        fi
+        exit 0
+    else
+        # Remove PID inválido
+        rm -f "$PID_FILE"
+    fi
+fi
+
+# Listar telas disponíveis com xrandr
+screens=$(list_screens)
+
+# Montar lista para o dmenu
+if [[ -z "$screens" ]]; then
+    notify-send -h string:fgcolor:$COLOR_3 "󰶐 Nenhuma tela conectada." --icon="/usr/share/icons/ePapirus/24x24/panel/simplescreenrecorder-error.svg"
+    exit 1
+fi
+
+# Selecionar tela com o dmenu
+selected_screen=$(printf "%b" "$screens" | dmenu -p "Selecione a tela para gravar:")
+if [[ -z "$selected_screen" ]]; then
+    notify-send -h string:fgcolor:$COLOR_3 " Gravação cancelada." --icon="/usr/share/icons/ePapirus/24x24/panel/simplescreenrecorder-error.svg"
+    exit 1
+fi
+
+# Monta o comando do ffmpeg
+case $selected_screen in
+    "Tela Selecionada Com Audio")
+
+        # Obtém a área de seleção com o `slop`
+        AREA=$(slop -f "%x %y %w %h") || exit 1
+
+        # Extrai as coordenadas e dimensões
+        read -r X Y WIDTH HEIGHT <<< "$AREA"
+
+        # Comando para gravar apenas a área selecionada
+        PARAMETRO_RESOLUCAO="-video_size "${WIDTH}x${HEIGHT}" -framerate 30 -f x11grab -i :0.0+"${X},${Y}""
+        PARAMETRO_AUDIO="$AUDIO_COPUTADOR_PRINCIPAL"
+        PARAMETRO_CODEC="-c:v h264 -qp 0 -c:a aac"
+        PARAMETRO_FORMATO_SAIDA=".mp4"
+    ;;
+    "Tela Selecionada Sem Audio")
+
+        # Obtém a área de seleção com o `slop`
+        AREA=$(slop -f "%x %y %w %h") || exit 1
+
+        # Extrai as coordenadas e dimensões
+        read -r X Y WIDTH HEIGHT <<< "$AREA"
+
+        # Comando para gravar apenas a área selecionada
+        PARAMETRO_RESOLUCAO="-video_size "${WIDTH}x${HEIGHT}" -framerate 30 -f x11grab -i :0.0+"${X},${Y}""
+        PARAMETRO_AUDIO=""
+        PARAMETRO_CODEC="-c:v h264 -qp 0 -c:a aac"
+        PARAMETRO_FORMATO_SAIDA=".mp4"
+    ;;
+
+    "Tela Selecionada em Gif")
+
+        # Obtém a área de seleção com o `slop`
+        AREA=$(slop -f "%x %y %w %h") || exit 1
+
+        # Extrai as coordenadas e dimensões
+        read -r X Y WIDTH HEIGHT <<< "$AREA"
+
+        # Comando para gravar apenas a área selecionada
+        PARAMETRO_RESOLUCAO="-video_size "${WIDTH}x${HEIGHT}" -framerate 15 -f x11grab -i :0.0+"${X},${Y}""
+        PARAMETRO_AUDIO=""
+        PARAMETRO_CODEC=""
+        PARAMETRO_FORMATO_SAIDA=".gif"
+    ;;
+    *)
+        # Extrair dimensões e posição da tela selecionada
+        resolution=$(echo "$selected_screen" | awk -F ' - ' '{print $2}' | awk -F '+' '{print $1}')
+        offset=$(echo "$selected_screen" | awk -F ' - ' '{print $2}' | awk -F '+' '{print $2"+"$3}')
+
+        if [[ -z "$resolution" || -z "$offset" ]]; then
+            notify-send -h string:fgcolor:$COLOR_3 " Tela inválida selecionada." --icon="/usr/share/icons/ePapirus/24x24/panel/simplescreenrecorder-error.svg"
+            exit 1
+        fi
+
+        # Grava audio do microfone e do computador
+        PARAMETRO_RESOLUCAO="-video_size "${resolution}" -framerate 30 -f x11grab -i ":0.0+${offset}" "
+        PARAMETRO_AUDIO="$MICROFONE_PRINCIPAL $AUDIO_COPUTADOR_PRINCIPAL -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[aout]" -map 0:v -map "[aout]""
+        PARAMETRO_CODEC="-c:v h264 -qp 0 -c:a aac"
+        PARAMETRO_FORMATO_SAIDA=".mp4"
+    ;;
+esac
+
+# Diretório e nome do arquivo de saída
+OUTPUT_DIR="$HOME/Vídeos/rec"
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_FILE="$OUTPUT_DIR/video_$(date +'%Y-%m-%d_%H-%M-%S')$PARAMETRO_FORMATO_SAIDA"
+
+# Notificacao inicio da gravacao
+notify-send -h string:fgcolor:$COLOR_3 " Gravação tela iniciada em $selected_screen" --icon="/usr/share/icons/ePapirus/24x24/panel/simplescreenrecorder-recording.svg"
+
+# Grava audio do microfone e do computador
+ffmpeg $PARAMETRO_RESOLUCAO \
+    $PARAMETRO_AUDIO \
+    $PARAMETRO_CODEC "$OUTPUT_FILE" &
+
+# Salvar PID e monitorar processo
+echo $! > "$PID_FILE"
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)
+
+exit 0

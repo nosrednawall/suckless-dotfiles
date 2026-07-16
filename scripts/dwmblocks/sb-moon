@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Função para calcular a diferença de dias desde 2001-01-01 até hoje
+position() {
+
+    # Verifica se possui parametro
+    if [ $# -eq 0 ]; then
+        # Se nao possui pega a data de hoje
+        local now=$(date +%s)                    # Data atual em segundos desde 1970-01-01
+    else
+        # se nao pega a data do parametro
+        local now=$(date -d "$1" +%s)  # Converte a data fornecida para segundos desde 1970-01-01
+    fi
+
+    local start=$(date -d "2001-01-01" +%s)  # Data de referência em segundos
+    local diff=$(( (now - start) / 86400 ))  # Diferença em dias
+    local seconds_diff=$(( (now - start) % 86400 ))
+    local fractional=$(awk "BEGIN { print $seconds_diff / 86400 }")
+
+    # Cálculo das lunações
+    local lunations=$(awk "BEGIN { print 0.20439731 + ($diff + $fractional) * 0.03386319269 }")
+
+    # Retorna a posição normalizada (módulo 1)
+    echo $(awk "BEGIN { print $lunations % 1 }")
+}
+
+# Função para determinar a fase lunar com base na posição
+phase() {
+    local pos=$1
+    local index=$(awk "BEGIN { print int(($pos * 8) + 0.5) % 8 }")
+
+    case $index in
+        0) echo "󰽤 Lua Nova" ;;
+        1) echo "󰽧 Lua Crescente" ;;
+        2) echo "󰽡 1/4 Minguante" ;;
+        3) echo "󰽨 Lua Minguante" ;;
+        4) echo "󰽢 Lua Cheia" ;;
+        5) echo "󰽦 Lua Minguante" ;;
+        6) echo "󰽣 4/4 Minguante" ;;
+        7) echo "󰽥 Lua Minguante" ;;
+    esac
+}
+
+# Função para gerar a notificação com as fases da lua para os próximos 7 dias
+generate_notification() {
+    local message=""
+
+    for i in {0..6}; do
+        local date=$(date -d "+$i days" +%Y-%m-%d)  # Data atual + i dias
+        local date_formated=$(date -d "+$i days" +%d/%m/%Y)
+        local pos=$(position "$date")  # Calcula a posição da lua
+        local phase_name=$(phase "$pos")  # Obtém o nome da fase lunar
+
+        # Adiciona a data e a fase lunar à mensagem
+        message+="  $date_formated: $phase_name\n"
+    done
+
+    # Envia a notificação
+    notify-send "Próximas fases da Lua" "$message"
+}
+
+
+# Função principal
+main() {
+
+    local pos=$(position)
+    local phasename=$(phase $pos)
+    #local lua_string=$(echo $phasename | awk -v color="^b$COLOR_5^^c$COLOR_BACKGROUND ^" -v d="^d^" -v color2="^c$COLOR_5^" '{print color $1 d color2" " $2 " " $3 " " d}')
+    local icon=$(echo $phasename | awk '{print $1}')
+    local fase=$(echo $phasename | awk '{print $2}')
+    local nome=$(echo $phasename | awk '{print $3}')
+
+    local output=$(aplicar_tema "$icon" "$fase $nome" "$COLOR_2" "$COLOR_10")
+
+    # Apresentacao condicionada
+    case "$OPERATION_MODE" in
+        "MINIMO")
+            echo ""
+            ;;
+        "MEDIO")
+            echo ""
+            ;;
+        "MOSTRAR_LUA")
+            # Força o uso do ponto como separador decimal
+            LC_NUMERIC=C printf "%s" "$output"
+            ;;
+    esac
+}
+# funcoes cliclaveis
+case $BUTTON in
+	1) generate_notification ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+main

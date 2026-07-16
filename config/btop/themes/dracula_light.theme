@@ -1,0 +1,92 @@
+# Bashtop Alucard (inspirado no tema Dracula)
+# por Anderson José de Souza Inácio
+
+# Cores devem estar em formato hexadecimal de 6 ou 2 caracteres ou decimal rgb: "#RRGGBB", "#BW" ou "0-255 0-255 0-255"
+# exemplo para branco: "#FFFFFF", "#ff" ou "255 255 255".
+
+# Todos os gráficos e medidores podem ser gradientes
+# Para gráficos de cor única, deixe as variáveis "mid" e "end" vazias.
+# Use as variáveis "start" e "end" para um gradiente de duas cores
+# Use "start", "mid" e "end" para um gradiente de três cores
+
+# Fundo principal, vazio para padrão do terminal, deve estar vazio se quiser fundo transparente
+theme[main_bg]="#f8f8f2"
+
+# Cor principal do texto
+theme[main_fg]="#44475a"
+
+# Cor do título das caixas
+theme[title]="#6272a4"
+
+# Cor de destaque para atalhos de teclado
+theme[hi_fg]="#ffb86c"
+
+# Cor de fundo dos itens selecionados
+theme[selected_bg]="#bd93f9"
+
+# Cor do texto dos itens selecionados
+theme[selected_fg]="#f8f8f2"
+
+# Cor do texto inativo/desabilitado
+theme[inactive_fg]="#6272a4"
+
+# Cor do texto que aparece sobre gráficos, como uptime e escala atual do gráfico de rede
+theme[graph_text]="#8be9fd"
+
+# Cores diversas para a caixa de processos, incluindo mini gráficos de CPU, gráfico de memória de detalhes e texto de status de detalhes
+theme[proc_misc]="#50fa7b"
+
+# Cor do contorno da caixa de CPU
+theme[cpu_box]="#ff79c6"
+
+# Cor do contorno da caixa de Memória/Discos
+theme[mem_box]="#bd93f9"
+
+# Cor do contorno da caixa de Upload/Download
+theme[net_box]="#8be9fd"
+
+# Cor do contorno da caixa de Processos
+theme[proc_box]="#ff79c6"
+
+# Linha divisória das caixas e linha das pequenas caixas
+theme[div_line]="#44475a"
+
+# Cores do gráfico de temperatura
+theme[temp_start]="#ffb86c"
+theme[temp_mid]="#ff79c6"
+theme[temp_end]="#bd93f9"
+
+# Cores do gráfico de CPU
+theme[cpu_start]="#50fa7b"
+theme[cpu_mid]="#f1fa8c"
+theme[cpu_end]="#ffb86c"
+
+# Medidor de Memória/Disco livre
+theme[free_start]="#50fa7b"
+theme[free_mid]=""
+theme[free_end]="#8be9fd"
+
+# Medidor de Memória/Disco em cache
+theme[cached_start]="#bd93f9"
+theme[cached_mid]=""
+theme[cached_end]="#f8f8f2"
+
+# Medidor de Memória/Disco disponível
+theme[available_start]="#ffb86c"
+theme[available_mid]=""
+theme[available_end]="#ff79c6"
+
+# Medidor de Memória/Disco usado
+theme[used_start]="#ff5555"
+theme[used_mid]=""
+theme[used_end]="#ff79c6"
+
+# Cores do gráfico de Download
+theme[download_start]="#8be9fd"
+theme[download_mid]="#bd93f9"
+theme[download_end]="#ff79c6"
+
+# Cores do gráfico de Upload
+theme[upload_start]="#ff79c6"
+theme[upload_mid]="#bd93f9"
+theme[upload_end]="#50fa7b"

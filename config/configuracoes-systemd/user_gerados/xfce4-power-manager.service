@@ -1,0 +1,10 @@
+[Unit]
+Description=Xfce4 power manager
+After=graphical.target
+
+[Service]
+ExecStart=/usr/bin/xfce4-power-manager &
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

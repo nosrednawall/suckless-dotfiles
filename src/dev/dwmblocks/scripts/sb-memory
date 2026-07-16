@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# funcoes cliclaveis
+case $BUTTON in
+    1) xsetroot -name "fsignal:togglescratch ui 4" ;;
+    3) st -g 150x50 -e htop ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+# Display RAM usage.
+memory=$(free | grep Mem | awk '{printf "%.0f\n", $3/$2 * 100.0}')
+
+echo "^c#859900^ ^d^$memory󰏰  "

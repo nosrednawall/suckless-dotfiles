@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+layout_master_stack="[]= - Modo tile"
+layout_floating="><> - Modo NULL"
+layout_monocle="[M] - Modo monocle"
+layout_bstack="TTT - Modo bstack"
+layout_bstackhoriz="=== - Modo bstackhoriz"
+layout_centeredmaster="|M| - Modo centeredmaster"
+layout_centeredfloatingmaster=">M> - Modo centeredfloatingmaster"
+layout_col="||| - Modo col"
+layout_deck="[D] - Modo deck"
+layout_spiral="(@) - Modo spiral"
+layout_dwingle="[\\ - Modo dwindle"
+layout_grid="HHH - Modo grid"
+layout_horizgrid="--- - Modo horizgrid"
+layout_gaplessgrid="::: - Modo gaplessgrid"
+layout_nrowgrid="### - Modo nrowgrid"
+
+# Variable passed to dmenu
+options="$layout_master_stack\n$layout_floating\n$layout_monocle\n$layout_bstack\n$layout_bstackhoriz\n$layout_centeredmaster\n$layout_centeredfloatingmaster\n$layout_col\n$layout_deck\n$layout_spiral\n$layout_dwingle\n$layout_grid\n$layout_horizgrid\n$layout_gaplessgrid\n$layout_nrowgrid"
+
+chosen="$(echo -e "$options" | dmenu -p "Layouts disponíveis para o dwm " )"
+echo "$chosen"
+case $chosen in
+	*"$layout_master_stack"*)
+		xdotool key Super_L+F1
+	;;
+	*"$layout_floating"*)
+		xdotool key Super_L+F2
+	;;
+	*"$layout_monocle"*)
+		xdotool key Super_L+F3
+	;;
+	*"$layout_bstack"*)
+		xdotool key Super_L+F4
+	;;
+	*"$layout_bstackhoriz"*)
+		xdotool key Super_L+F5
+	;;
+	*"$layout_centeredmaster"*)
+		xdotool key Super_L+F6
+	;;
+	*"$layout_centeredfloatingmaster"*)
+		xdotool key Super_L+F7
+	;;
+	*"$layout_col"*)
+		xdotool key Super_L+F8
+	;;
+	*"$layout_deck"*)
+		xdotool key Super_L+F9
+	;;
+	*"$layout_spiral"*)
+		xdotool key Super_L+F10
+	;;
+	*"$layout_dwingle"*)
+		xdotool key Super_L+F11
+	;;
+	*"$layout_grid"*)
+		xdotool key Super_L+F12
+	;;
+	*"$layout_horizgrid"*)
+		xdotool key Super_L+Shift+F1
+	;;
+	*"$layout_gaplessgrid"*)
+		xdotool key Super_L+Shift+F2
+	;;
+	*"$layout_nrowgrid"*)
+		xdotool key Super_L+Shift+F3
+	;;
+esac

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# funcoes cliclaveis
+case $BUTTON in
+    1)
+
+    # Obtém a lista de processos e agrupa os percentuais de memória para processos com o mesmo nome
+    processes=$(ps -eo comm,pmem --sort=-pmem | awk '
+NR>1 {
+    mem[$1] += $2;
+}
+END {
+    for (proc in mem) {
+        printf "%s %.1f\n", proc, mem[proc];
+    }
+}' | sort -k2,2nr | head -n 10)
+
+    # Cabeçalho da notificação
+    notification=""
+
+    # Itera sobre os processos agrupados
+    while IFS= read -r line; do
+        comm=$(echo "$line" | awk '{print $1}')
+        pmem=$(echo "$line" | awk '{print $2}')
+
+        # Adiciona as informações ao texto da notificação
+        notification+="  $comm ${pmem}%\n"
+    done <<< "$processes"
+
+    # Envia a notificação
+    notify-send "Monitor de Memória RAM" "$notification"
+    ;;
+    2) xsetroot -name "fsignal:togglescratch ui 4" ;;
+    3) st -n "htop"  -e "htop"  &>/dev/null & ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+# Display RAM usage.
+memory=$(free | grep Mem | awk '{printf "%.0f\n", $3/$2 * 100.0}')
+output=$(aplicar_tema "" "$memory" "$COLOR_7" "$COLOR_15")
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+    # echo "^b$COLOR_7^^c$COLOR_BACKGROUND^  ^d^^c$COLOR_BACKGROUND^^b$COLOR_15^ $memory% ^d^ "
+        echo "$output"
+    ;;
+esac

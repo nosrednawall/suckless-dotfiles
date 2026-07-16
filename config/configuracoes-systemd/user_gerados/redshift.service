@@ -1,0 +1,10 @@
+[Unit]
+Description=Redshift - Adjusts screen color temperature
+
+[Service]
+ExecStart=/usr/bin/redshift -l -25.54354018313095:-49.16561321065291 -t 5700:3600 -g 0.8 -m randr
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

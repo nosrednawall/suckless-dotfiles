@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Carrega informacoes do modo de operacao
+arquivo_modo="$HOME/.cache/dwmblocks_modo_operacao"
+
+if [ -f $arquivo_modo ]; then
+    source $arquivo_modo
+else
+    OPERATION_MODE="COMPLETO"
+fi
+
+# Carrega as cores do tema
+source ~/.theme_selected
+
+case "$BUTTON" in
+    1) mpc -q toggle
+       ~/.local/bin/songinfo
+    ;;
+    2) mpc -q prev
+       ~/.local/bin/songinfo
+    ;;
+    3) mpc -q next
+       ~/.local/bin/songinfo
+    ;;
+    4) mpc -q seek +5 ;;
+    5) mpc -q seek -5 ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+    8) xsetroot -name "fsignal:togglescratch ui 6" ;;
+esac
+
+# Ícones para a música tocando e pausada
+icon="^c$COLOR_6^󰝚"
+paused_icon="^c$COLOR_1^"
+
+# Verifica o estado do MPD (tocando, pausado ou parado)
+status="$(mpc status | grep '\[playing\]')"
+
+if [ -n "$status" ]; then
+    # Se estiver tocando, usa o ícone de música
+    song="$(mpc current --format="%title%")"
+else
+    # Se estiver pausado, usa o ícone de pausa
+    [ "$(mpc status "%state%")" = "paused" ] && icon="$paused_icon"
+    song="$(mpc current --format="%title%")"
+fi
+
+# Se não houver música, sai do script
+[ -z "$song" ] && exit
+
+# Limita o título da música a 30 caracteres
+#[[ ${song} -gt 20 ]] && song="${song:0:20}..."
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        # Exibe o ícone e a música
+        echo "$icon ^d^$song  "
+    ;;
+    *)
+        # Exibe o ícone e a música
+        echo "$icon ^d^$song  "
+    ;;
+esac

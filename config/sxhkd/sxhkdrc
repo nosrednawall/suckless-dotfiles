@@ -1,0 +1,117 @@
+# === LAUNCH ===
+
+# !Launch Rofi Application Menu (primary launcher)
+super + space
+	rofi -show drun -modi drun -line-padding 4 -hide-scrollbar -show-icons -theme ~/.config/suckless/rofi/config.rasi
+
+# Launch Browser (Firefox-esr)
+super + b
+	firefox-esr
+
+# Launch Private Browser (Firefox Incognito Mode)
+super + shift + b
+	firefox-esr -private-window
+
+# Show Keybinding Help Script
+super + slash
+	~/.config/suckless/scripts/help
+
+# Launch File Manager (Thunar)
+super + f
+	thunar
+
+# Launch Geany (Text Editor)
+super + e
+	geany
+
+# Launch GIMP (Image Editor)
+super + g
+	gimp
+
+# Helium browser
+super + c
+	helium
+
+# Helium browser (incognito)
+super + shift + c
+	helium --incognito
+
+# Launch Discord
+super + d
+	Discord
+
+# Launch OBS (Screen Recording/Streaming)
+super + o
+	obs
+
+# === WINDOW ===
+
+# DWM Layout Menu
+super + shift + l
+	~/.config/suckless/scripts/dwm-layout-menu.sh
+
+# DWM Theme Switcher
+super + shift + t
+	~/.config/suckless/scripts/dwm-thememenu
+
+# Tab attach: focused window into a tab group on this monitor
+super + w
+	~/.config/suckless/dwm/dwmtabs attach
+
+# Tab detach: focused window out of its tab group
+super + shift + w
+	~/.config/suckless/dwm/dwmtabs detach
+
+# === MEDIA & BRIGHTNESS ===
+
+# Increase Volume (Custom Script)
+super + F12
+	~/.config/suckless/scripts/changevolume up
+
+# Decrease Volume (Custom Script)
+super + F11
+	~/.config/suckless/scripts/changevolume down
+
+# Toggle Mute (Custom Script)
+super + F10
+	~/.config/suckless/scripts/changevolume mute
+
+# Dedicated Key for Volume Up
+XF86AudioRaiseVolume
+	~/.config/suckless/scripts/changevolume up
+
+# Dedicated Key for Volume Down
+XF86AudioLowerVolume
+	~/.config/suckless/scripts/changevolume down
+
+# Dedicated Key for Mute
+XF86AudioMute
+	~/.config/suckless/scripts/changevolume mute
+
+# Increase Screen Brightness
+XF86MonBrightnessUp
+	xbacklight +10
+
+# Decrease Screen Brightness
+XF86MonBrightnessDown
+	xbacklight -10
+
+# === SCREENSHOTS ===
+
+# Take a Screenshot (Region Select)
+super + shift + s
+	flameshot gui --path ~/Screenshots/
+
+# Take a Fullscreen Screenshot
+super + s
+	flameshot full --path ~/Screenshots/
+
+# === SYSTEM ===
+
+# Reload sxhkd (Hotkey Daemon)
+super + Escape
+	pkill -USR1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+
+# Power Off/Reboot
+super + x
+	~/.config/suckless/scripts/power

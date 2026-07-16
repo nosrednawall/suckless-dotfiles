@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Display volume levels.
+
+case $BUTTON in
+	1) bash ~/.dotfiles/.local/bin/dwm/muta_volume ;;
+    2) bash ~/.dotfiles/.local/bin/dmenu/dmenu-controle-som ;;
+    3) setsid -f st -e pulsemixer ;;
+    4) bash ~/.dotfiles/.local/bin/dwm/aumenta_volume ;;
+    5) bash ~/.dotfiles/.local/bin/dwm/diminui_volume ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+muteVol=$(pactl get-sink-mute @DEFAULT_SINK@ | grep "sim" -ic)
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+
+if [ "$muteVol" -eq 1 ]; then
+    iconVolume="^c#4A5947^󰸈 $volume󰏰"
+else
+    if [ "$volume" -le 30 ]; then
+	iconVolume="^c#859900^󰕿 ^d^$volume󰏰"
+    elif [ "$volume" -le 60 ]; then
+	iconVolume="^c#859900^󰖀 ^d^$volume󰏰"
+    elif [ "$volume" -ge 61 ]; then
+	iconVolume="^c#859900^󰕾 ^d^$volume󰏰"
+    fi
+fi
+
+echo "$iconVolume  "

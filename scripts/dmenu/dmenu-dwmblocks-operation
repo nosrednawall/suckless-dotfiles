@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+# Configurações
+CACHE_DIR="$HOME/.cache"
+CONFIG_FILE="$CACHE_DIR/dwmblocks_modo_operacao"
+
+# Definições de modos e temas
+declare -A MODOS=(
+    ["MINIMO"]="Mínimo - Apenas data, Hora e Pomodoro"
+    ["MEDIO"]="Médio - Apenas data, hora, volumes, players e pomodoro"
+    ["COMPLETO"]="Completo - Todos os Blocks possíveis"
+    ["ICONES"]="Ícones - Completo porém apenas ícones"
+    ["MOSTRAR_LUA"]="Mostra o block com as fases da lua"
+)
+
+declare -A TEMAS=(
+    ["T_COLORFULL"]="colorfull"
+    ["T_BRACKETS"]="brackets"
+    ["T_ROUNDED"]="rounded"
+    ["T_KEYS"]="keys"
+    ["T_SIMPLE"]="simple"
+    ["T_SIMPLE_COLOR"]="simple-color"
+    ["T_ICON_COLOR"]="icon-color"
+    ["T_SEPARADOR"]="separador"
+    ["T_COLORFULL_ICON"]="colorfull-icon"
+)
+
+# Função para carregar configuração
+carregar_config() {
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    else
+        OPERATION_MODE="COMPLETO"
+        THEME="colorfull"
+    fi
+}
+
+# Função para salvar configuração
+salvar_config() {
+    mkdir -p "$CACHE_DIR"
+    cat > "$CONFIG_FILE" << EOF
+#!/bin/bash
+OPERATION_MODE="$1"
+THEME="$2"
+EOF
+}
+
+# Função para mostrar notificação
+notificar() {
+    local mensagem="$1"
+    notify-send -t 3000 "Modo DWMBlocks" "$mensagem" \
+        --icon="/usr/share/icons/ePapirus/16x16/actions/escape-direction-all.svg"
+}
+
+# Função para construir menu
+construir_menu() {
+    local menu="Modos de Operação\n"
+
+    # Adiciona modos
+    for modo in "${MODOS[@]}"; do
+        menu+="$modo\n"
+    done
+
+    menu+="\nTemas\n"
+
+    # Adiciona temas
+    for tema in "${TEMAS[@]}"; do
+        menu+="$tema\n"
+    done
+
+    echo -e "$menu"
+}
+
+# Função principal
+main() {
+    carregar_config
+
+    # Constrói e mostra menu
+    local menu=$(construir_menu)
+    local escolha=$(echo -e "$menu" | dmenu -p "Modos e temas para DWMBlocks")
+
+    # Verifica se usuário cancelou
+    [[ -z "$escolha" ]] && exit 0
+
+    # Processa escolha
+    local modo_atual="$OPERATION_MODE"
+    local tema_atual="$THEME"
+    local mudou_modo=false
+
+    # Verifica se é um modo
+    for key in "${!MODOS[@]}"; do
+        if [[ "${MODOS[$key]}" == "$escolha" ]]; then
+            modo_atual="$key"
+            mudou_modo=true
+            break
+        fi
+    done
+
+    # Se não é modo, verifica se é tema
+    if [[ "$mudou_modo" == false ]]; then
+        for key in "${!TEMAS[@]}"; do
+            if [[ "${TEMAS[$key]}" == "$escolha" ]]; then
+                tema_atual="${TEMAS[$key]}"
+                break
+            fi
+        done
+    fi
+
+    # Salva configuração
+    salvar_config "$modo_atual" "$tema_atual"
+
+    sleep 1
+    kill -10 $(pidof dwmblocks)
+
+    # Notifica usuário
+    if [[ "$mudou_modo" == true ]]; then
+        notificar "Alterado o modo do DWMBlocks para ${MODOS[$modo_atual]}"
+    else
+        notificar "Alterado o tema do DWMBlocks para $tema_atual"
+    fi
+}
+
+# Executa função principal
+main

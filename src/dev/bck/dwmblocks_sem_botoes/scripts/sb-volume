@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Display volume levels.
+
+muteVol=$(pactl get-sink-mute @DEFAULT_SINK@ | grep "sim" -ic)
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+
+if [ "$muteVol" -eq 1 ]; then
+    iconVolume="^c#4A5947^󰸈 $volume󰏰"
+else
+    if [ "$volume" -le 30 ]; then
+	iconVolume="^c#859900^󰕿 ^d^$volume󰏰"
+    elif [ "$volume" -le 60 ]; then
+	iconVolume="^c#859900^󰖀 ^d^$volume󰏰"
+    elif [ "$volume" -ge 61 ]; then
+	iconVolume="^c#859900^󰕾 ^d^$volume󰏰"
+    fi
+fi
+
+echo "$iconVolume  "

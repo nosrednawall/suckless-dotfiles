@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Carrega o tema
+source ~/.theme_selected
+
+# Manda o sinal para aumentar o volume
+pactl set-sink-volume @DEFAULT_SINK@ +5%
+
+# Pega o novo valor de volume
+volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+
+# Manda sinal para atualizar o dwmblocks
+kill -43 $(pidof dwmblocks)
+
+# Envia a mensagem para notificação
+notify-send -t 3000 "󰝝 $volume%" "Aumentado +5% de volume" --icon="$THEME_ICON_DUNST/16x16/devices/audio-speakers.svg"

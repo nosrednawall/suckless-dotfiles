@@ -1,0 +1,8 @@
+build/
+src/config.h
+bin/
+obj/
+config.h
+debug/
+gmon.out
+massif.out.*

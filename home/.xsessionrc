@@ -1,0 +1,9 @@
+wm_name=$(echo $DESKTOP_SESSION)
+if [ $wm_name = openbox  ]; then
+
+    # Bar
+    is_running "polybar" || ~/.config/polybar/launch.sh &
+else
+    # Abre o dwmblocks
+    is_running "dwmblocks" || dwmblocks &
+fi

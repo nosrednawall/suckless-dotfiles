@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+#slock -m "$(fortune | cowthink -f dragon )"
+slock #-m "DWM é muito bom"

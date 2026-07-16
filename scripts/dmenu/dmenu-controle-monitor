@@ -1,0 +1,416 @@
+#!/usr/bin/env bash
+
+# Configurações
+CONFIG_DIR="$HOME/.dotfiles"
+THEME_FILE="$CONFIG_DIR/.theme_selected"
+MONITOR_CONFIG="$HOME/.monitor_config.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MAPWACON_SCRIPT="$HOME/.config/suckless/scripts/others/mapwacon.sh"
+
+# Cores para output (opcional)
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Função para log
+log() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Carrega configurações de tema
+load_theme() {
+    if [[ -f "$THEME_FILE" ]]; then
+        source "$THEME_FILE"
+        log "Tema carregado: $THEME_FILE"
+    else
+        log_warn "Arquivo de tema não encontrado: $THEME_FILE"
+    fi
+}
+
+# Função para verificar se um processo está rodando
+is_running() {
+    ps aux | grep -v grep | grep -q "$1"
+}
+
+is_paused_dust() {
+    if [ "$(dunstctl is-paused)" == "true" ]; then
+        dunstctl set-paused toggle
+    fi
+}
+
+# Detecta dispositivos de vídeo
+detect_displays() {
+    local xrandr_output
+    xrandr_output=$(xrandr -q 2>/dev/null)
+    
+    if [[ $? -ne 0 ]]; then
+        log_error "Falha ao executar xrandr"
+        return 1
+    fi
+    
+    HDMI_DEVICE=$(echo "$xrandr_output" | grep "HDMI" | grep -w "connected" | awk '{print $1}' | head -1)
+    EDP_DEVICE=$(echo "$xrandr_output" | grep "eDP" | grep -w "connected" | awk '{print $1}' | head -1)
+    VIRTUAL_DEVICE=$(echo "$xrandr_output" | grep "Virtual" | grep -w "connected" | awk '{print $1}' | head -1)
+    
+    log "Dispositivos detectados: HDMI=$HDMI_DEVICE, eDP=$EDP_DEVICE, Virtual=$VIRTUAL_DEVICE"
+}
+
+# Obtém resoluções
+get_resolutions() {
+    local xrandr_output
+    xrandr_output=$(xrandr -q)
+    
+    RES_HDMI=$(echo "$xrandr_output" | grep "^$HDMI_DEVICE" | grep -oP '\d+x\d+' | head -1)
+    RES_EDP=$(echo "$xrandr_output" | grep "^$EDP_DEVICE" | grep -oP '\d+x\d+' | head -1)
+    RES_VIRT=$(echo "$xrandr_output" | grep "^$VIRTUAL_DEVICE" | grep -oP '\d+x\d+' | head -1)
+    
+    # Valores padrão caso não encontre
+    RES_HDMI=${RES_HDMI:-"1920x1080"}
+    RES_EDP=${RES_EDP:-"1920x1080"}
+    RES_VIRT=${RES_VIRT:-"1920x1080"}
+}
+
+# Aplica configuração do wallpaper
+apply_wallpaper() {
+    if [[ -f "$HOME/.fehbg" ]]; then
+        bash "$HOME/.fehbg"
+        log "Wallpaper aplicado"
+    else
+        log_warn "Arquivo .fehbg não encontrado"
+    fi
+}
+
+# Remove arquivo de configuração temporário
+cleanup_temp_config() {
+    if [[ -f "$MONITOR_CONFIG" ]]; then
+        rm -f "$MONITOR_CONFIG"
+        log "Configuração temporária removida"
+    fi
+}
+
+# Cria arquivo de configuração persistente
+create_persistent_config() {
+    local config_content="$1"
+    cleanup_temp_config
+    
+    cat > "$MONITOR_CONFIG" << EOF
+#!/bin/bash
+$config_content
+EOF
+    
+    chmod +x "$MONITOR_CONFIG"
+    log "Configuração persistente criada: $MONITOR_CONFIG"
+}
+
+# Envia notificação
+send_notification() {
+    local title="$1"
+    local message="$2"
+    local icon="$3"
+    
+    notify-send -t 3000 "$title" "$message" --icon="$icon" 2>/dev/null
+    log "Notificação: $title - $message"
+}
+
+# Modo Casa (HDMI + Notebook)
+mode_home() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --auto --rotate normal --dpi 96 --output $EDP_DEVICE --primary --auto --rotate normal --dpi 96 --left-of $HDMI_DEVICE"
+    
+    eval "$config_cmd"
+    send_notification "󰍹 Monitor Externo" "Adicionado tela via HDMI" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    is_paused_dust
+
+    # Inicia o xautolock com as configurações personalizadas se não estiver rodando
+    is_running "xautolock" || xautolock -time 15 -locker ~/.config/suckless/scripts/dwm/dwm-slock-personalizado -detectsleep &
+    cleanup_temp_config
+}
+
+# Modo Notebook
+mode_notebook() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --off --output $EDP_DEVICE --primary --auto --rotate normal --dpi 96"
+    
+    eval "$config_cmd"
+    send_notification " Modo Laptop" "Alterado tela para modo Laptop" "/usr/share/icons/ePapirus/16x16/devices/computer-laptop.svg"
+    apply_wallpaper
+    is_paused_dust
+
+    # Inicia o xautolock com as configurações personalizadas se não estiver rodando
+    is_running "xautolock" || xautolock -time 15 -locker ~/.config/suckless/scripts/dwm/dwm-slock-personalizado -detectsleep &
+    create_persistent_config "$config_cmd"
+}
+
+# Modo Game
+mode_game_ligar() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --mode 1920x1080 --rate 120 --pos 1920x0 --rotate normal --output $EDP_DEVICE --primary --mode 1920x1080 --rate 144 --pos 0x0 --rotate normal"
+#    local config_cmd="xrandr --output $HDMI_DEVICE --mode  2560x1440 --rate 120 --pos 1920x0 --rotate normal --output $EDP_DEVICE --primary --mode 1920x1080 --rate 144 --pos 0x0 --rotate normal"
+    eval "$config_cmd"
+    
+    # Para serviço redshift
+    systemctl --user stop redshift.service 2>/dev/null
+    killall redshift 2>/dev/null
+    redshift -P -O 6500
+
+    # Pausa as notificações do dunst
+    dunstctl set-paused toggle
+    
+    send_notification " Modo Game" "Configuração de gaming ativada" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    create_persistent_config "$config_cmd"
+}
+
+
+mode_game_desligar() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --auto --rotate normal --dpi 96 --output $EDP_DEVICE --primary --auto --rotate normal --dpi 96 --left-of $HDMI_DEVICE"
+
+    eval "$config_cmd"
+
+    # Para serviço redshift
+    systemctl --user start redshift.service 2>/dev/null
+
+    # Retorna as notificações do dunst
+    dunstctl set-paused toggle
+
+    send_notification " Modo Game" "Configuração de gaming desativada" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    create_persistent_config "$config_cmd"
+}
+
+
+# Modo Game
+mode_game_elden_ring() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --primary --mode 1920x1080 --rate 120 --output $EDP_DEVICE --off"
+
+    eval "$config_cmd"
+
+    # Para serviço redshift
+    systemctl --user stop redshift.service 2>/dev/null
+    killall redshift 2>/dev/null
+    redshift -P -O 6500
+
+    # Pausa as notificações do dunst
+    dunstctl set-paused toggle
+
+    send_notification " Modo Game" "Configuração de gaming ativada" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    create_persistent_config "$config_cmd"
+}
+
+
+# Modo Monitor Externo
+mode_external_only() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --primary --auto --rotate normal --dpi 96 --output $EDP_DEVICE --off"
+    
+    eval "$config_cmd"
+    send_notification "󱧑 Só Monitor Externo" "Usando apenas monitor externo" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    is_paused_dust
+    create_persistent_config "$config_cmd"
+}
+
+mode_mirror() {
+    local res1="$1"
+    local res2="$2"
+    local dpi="$3"
+
+    killall xautolock 2>/dev/null
+    local config_cmd="xrandr --output $HDMI_DEVICE --mode $res1 --rate 60 --pos $res2 --rotate normal --output $EDP_DEVICE --primary --mode $res1 --rate 60 --pos 0x0 --rotate normal --dpi $dpi"
+    eval "$config_cmd"
+    send_notification "󰐯 Modo Apresentação" "Xautolock desativado" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+
+    local config_cmd="xrandr --output $EDP_DEVICE --primary --mode $res1 --rotate normal --output $HDMI_DEVICE --same-as $EDP_DEVICE --dpi $dpi"
+    eval "$config_cmd"
+}
+
+# Modo Apresentação
+mode_presentation() {
+    killall xautolock 2>/dev/null
+    send_notification "󰐯 Modo Apresentação" "Xautolock desativado" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+}
+
+# Modo Duplicado
+mode_duplicate() {
+    local config_cmd="xrandr --output $HDMI_DEVICE --primary --auto --rotate normal --output $EDP_DEVICE --same-as $HDMI_DEVICE"
+    
+    eval "$config_cmd"
+    send_notification "󰍺 Duplicar Telas" "Ambos monitores com mesma visualização" "/usr/share/icons/ePapirus/16x16/devices/computer.svg"
+    apply_wallpaper
+    create_persistent_config "$config_cmd"
+}
+
+# Modo Dia
+mode_day() {
+     systemctl --user stop redshift.service
+    redshift -P -O 6500
+    send_notification "󰛨 Modo Diurno" "Brilho da tela ajustado para modo diurno" "/usr/share/icons/ePapirus/16x16/actions/colors-chromablue.svg"
+}
+
+# Modo Noite
+mode_night() {
+    systemctl --user start redshift.service
+    redshift -P -O 4500
+    send_notification "󱩍 Modo Noturno" "Brilho da tela ajustado para modo noturno" "/usr/share/icons/ePapirus/16x16/actions/redeyes.svg"
+}
+
+# Configurar Tablet Wacon
+setup_tablet() {
+    local target="$1"
+    local device_name="$2"
+    
+    if [[ ! -f "$MAPWACON_SCRIPT" ]]; then
+        log_error "Script do tablet Wacon não encontrado: $MAPWACON_SCRIPT"
+        send_notification "󰓶 Erro Tablet" "Script do tablet não encontrado" "/usr/share/icons/ePapirus/16x16/devices/input-tablet.svg"
+        return 1
+    fi
+    
+    "$MAPWACON_SCRIPT" -d "$device_name" -s "$target"
+    
+    local message
+    case "$target" in
+        "$HDMI_DEVICE") message="Configurado para tela HDMI" ;;
+        "$EDP_DEVICE") message="Configurado para tela do Notebook" ;;
+        *) message="Configurado para $target" ;;
+    esac
+
+    # Configura os botoes da mesa para o Obsidian
+    # https://sobrelinux.info/questions/28926/configuring-wacom-tablet-buttons-and-options
+    xsetwacom set "Wacom Intuos S Pad pad" Button 1 key "1"
+    xsetwacom set "Wacom Intuos S Pad pad" Button 2 key "7"
+    xsetwacom set "Wacom Intuos S Pad pad" Button 3 key "0"
+    xsetwacom set "Wacom Intuos S Pen stylus" Button 2 key "7"
+    xsetwacom set "Wacom Intuos S Pen stylus" Button 3 key "0"
+
+    
+    send_notification "󰓶 Tablet Wacon" "$message" "/usr/share/icons/ePapirus/16x16/devices/input-tablet.svg"
+}
+
+# Mostra menu e obtém escolha do usuário
+show_menu() {
+    # Atualiza resoluções
+    get_resolutions
+    
+    # Opções do menu
+    local options=(
+        "󰍹 Monitor Externo ($RES_HDMI)"
+        " Notebook ($RES_EDP)"
+        " Modo Game Ligar"
+        " Modo Game Desligar"
+        " Modo Mirror 1920x1080"
+        " Modo Mirror 800x600"
+        " Modo Mirror 640x480"
+        "󰐯 Modo Apresentação"
+        "󱧑 Só monitor externo ($RES_HDMI)"
+        "󰍺 Duplica a mesma visualização ($RES_EDP = $RES_HDMI)"
+        "󰛨 Dia"
+        "󱩍 Noite"
+        "󰓶 Tablet Wacon HDMI"
+        "󰓶 Tablet Wacon Notebook"
+    )
+    
+    local chosen
+    chosen=$(printf "%s\n" "${options[@]}" | dmenu -p "Scripts de monitor")
+    
+    echo "$chosen"
+}
+
+# Processa a escolha do usuário
+process_choice() {
+    local choice="$1"
+    
+    case "$choice" in
+        *"Monitor Externo"*)
+            mode_home
+            ;;
+        *"Notebook"*)
+            mode_notebook
+            ;;
+        *"Modo Game"*)
+            mode_game_ligar
+            ;;
+        *"Modo Game Desligar"*)
+            mode_desligar
+            ;;
+        *"Modo Apresentação"*)
+            mode_presentation
+            ;;
+        *"Só monitor externo"*)
+            mode_external_only
+            ;;
+        *"Duplica"*)
+            mode_duplicate
+            ;;
+        *"Modo Mirror 1920x1080"*)
+            mode_mirror "1920x1080" "1920x0" "92"
+            ;;
+        *"Modo Mirror 800x600"*)
+            mode_mirror "800x600" "800x0" "80"
+            ;;
+        *"Modo Mirror 640x480"*)
+            mode_mirror "640x480" "640x0" "80"
+            ;;
+        *"Dia"*)
+            mode_day
+            ;;
+        *"Noite"*)
+            mode_night
+            ;;
+        *"Tablet Wacon HDMI"*)
+            setup_tablet "$HDMI_DEVICE" "Wacom Intuos S Pen stylus"
+            ;;
+        *"Tablet Wacon Notebook"*)
+            setup_tablet "$EDP_DEVICE" "Wacom Intuos S Pen stylus"
+            ;;
+        *)
+            log "Nenhuma opção selecionada ou opção inválida"
+            ;;
+    esac
+}
+
+# Função principal
+main() {
+    log "Iniciando script de configuração de monitor"
+    
+    # Verifica dependências
+    if ! command -v xrandr &> /dev/null; then
+        log_error "xrandr não encontrado. Instale xorg-xrandr."
+        exit 1
+    fi
+    
+    if ! command -v dmenu &> /dev/null; then
+        log_error "dmenu não encontrado. Instale dmenu."
+        exit 1
+    fi
+    
+    # Carrega configurações
+    load_theme
+    detect_displays
+    
+    if [[ -z "$EDP_DEVICE" && -z "$HDMI_DEVICE" ]]; then
+        log_error "Nenhum dispositivo de vídeo detectado"
+        exit 1
+    fi
+    
+    # Mostra menu e processa escolha
+    local choice
+    choice=$(show_menu)
+    
+    if [[ -n "$choice" ]]; then
+        process_choice "$choice"
+    else
+        log "Operação cancelada pelo usuário"
+    fi
+    
+    log "Script finalizado"
+}
+
+# Executa função principal
+main "$@"

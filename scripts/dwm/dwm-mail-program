@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+x-www-browser "https://mail.google.com/mail/u/0/"

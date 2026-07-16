@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+# Define o PATH manualmente
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$HOME/.local/bin"
+
+# Diretório base onde estão as pastas com docker-compose.yml
+BASE_DIR="$HOME/git/Biblioteca_Scripts/Docker"
+
+# Função para listar pastas com docker-compose.yml
+list_docker_folders() {
+    find "$BASE_DIR" -type f -name "docker-compose.yml" | sed 's|/docker-compose.yml||g'
+}
+
+# Função para verificar o status dos contêineres
+check_container_status() {
+    local folder="$1"
+    local status=$(docker-compose -f "$folder/docker-compose.yml" ps --status running | wc -l)
+    local port=$(docker-compose -f "$folder/docker-compose.yml" ps --status running | awk '{print $11}' | grep -oP '\d+->\d+' | awk -F'->' '{print "http://localhost:" $1}' | tr '\n' ' ')
+
+    # O 1 é referente à primeira linha do retorno do comando, que é o cabeçalho, logo se tiver apenas 1 o serviço não está funcionando
+    if [[ $status -eq 1 ]]; then
+        echo "DOWN $(basename $folder)"
+    else
+        echo "UP $(basename $folder) $port"
+    fi
+}
+
+# Gera a lista de pastas com status
+generate_menu() {
+    for folder in $(list_docker_folders); do
+        check_container_status "$folder"
+    done
+}
+
+# Executa o dmenu e obtém a seleção do usuário
+selected=$(generate_menu | dmenu -l 10 -p "Docker Compose:" | awk '{print $2}')
+
+# Verifica se uma seleção foi feita
+if [[ -n "$selected" ]]; then
+    selected="$BASE_DIR/$selected"
+    # Verifica o status do contêiner selecionado
+    status=$(docker-compose -f "$selected/docker-compose.yml" ps --status running | wc -l)
+
+    if [[ $status -eq 1 ]]; then
+        # Se estiver parado, inicia o contêiner
+        opcao=$(echo -e "Executar\nBuild" | dmenu -l 10 -p "Opção:")
+        parametro=""
+
+        if [ "$opcao" = "Build"  ]; then
+            cd $selected
+            docker build .
+        fi
+
+        #notify-send "Docker Compose" "Contêiner em $selected está sendo iniciado."
+        #docker-compose -f "$selected/docker-compose.yml" up -d $parametro
+        #notify-send "Docker Compose" "Contêiner em $selected foi iniciado."
+
+        # Exibe a notificação inicial
+        notify-send -t 0 "Docker Compose" "Contêiner em $selected está sendo iniciado..."
+
+        # Executa o Docker Compose em segundo plano
+        docker-compose -f "$selected/docker-compose.yml" up -d $parametro
+
+        # Captura o ID da notificação inicial
+        notification_id=$(notify-send -p -t 0 "Docker Compose" "Contêiner em $selected está sendo iniciado..." | awk '{print $1}')
+
+        # Aguarda o término do Docker Compose
+        docker-compose -f "$selected/docker-compose.yml" up -d $parametro &
+        docker_pid=$!
+
+        # Espera o processo do Docker Compose terminar
+        wait $docker_pid
+
+        # Fecha a notificação inicial
+        notify-send --close=$notification_id
+
+        # Exibe a notificação de conclusão
+        notify-send "Docker Compose" "Contêiner em $selected foi iniciado."
+
+
+        # Abre no navegador o docker se ele possuir portas
+        sleep 1.9
+#        docker-compose -f "$selected/docker-compose.yml" ps --status running \
+#            | awk '{print $11}' \
+#            | grep -oP '\d+->\d+' \
+#            | awk -F'->' '{print "http://localhost:" $1}' \
+#            | xargs -I {} xdg-open {}
+
+#        docker-compose -f "$selected/docker-compose.yml" ps --status running \
+#            | awk '/0.0.0.0:/ {for(i=1;i<=NF;i++) if($i ~ /0.0.0.0:/) {split($i,a,":"); split(a[2],b,"->"); print "http://localhost:"b[1]}}' \
+#            | xargs -I {} xdg-open {}
+
+        url=$(docker-compose -f "$selected/docker-compose.yml" ps --status running \
+            | awk '/0.0.0.0:/ {for(i=1;i<=NF;i++) if($i ~ /0.0.0.0:/) {split($i,a,":"); split(a[2],b,"->"); print "http://localhost:"b[1]}}' \
+            | dmenu -l 10 -p "Abrir URL no navegador: ")
+
+        xdg-open $url
+
+    else
+        # Mostro a Opcao de parar ou abrir os links no navegador
+        opcao=$(echo -e "Parar\nLink" | dmenu -l 10 -p "Opção:")
+
+        if [ "$opcao" = "Parar"  ]; then
+            # Se estiver em execução, para o contêiner
+            docker-compose -f "$selected/docker-compose.yml" down
+            notify-send -r 27072 "Docker Compose" "Contêiner em $selected foi parado."
+        else
+            # Carrega uma lista dos links, e apresenta, o link selecionado será aberto
+            url=$(docker-compose -f "$selected/docker-compose.yml" ps --status running \
+                | awk '/0.0.0.0:/ {for(i=1;i<=NF;i++) if($i ~ /0.0.0.0:/) {split($i,a,":"); split(a[2],b,"->"); print "http://localhost:"b[1]}}' \
+                | dmenu -l 10 -p "Abrir URL no navegador: ")
+            xdg-open $url
+        fi
+    fi
+fi
+exit 0

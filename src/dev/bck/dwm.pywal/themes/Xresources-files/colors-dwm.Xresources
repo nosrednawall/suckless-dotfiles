@@ -1,0 +1,52 @@
+! Esse arquivo deve ficar em /home/anderson/.config/wal/templates/
+! é necessário instalar o pywal - pipx isntall pywal
+! Cores padrão (normal)
+dwm.normfgcolor:                {color7}
+dwm.normbgcolor:                {color0}
+dwm.normbordercolor:            {color8}
+dwm.normfloatcolor:             {color3}
+
+! Cores selecionadas (selecionado)
+dwm.selfgcolor:                 {color0}
+dwm.selbgcolor:                 {color10}
+dwm.selbordercolor:             {color10}
+dwm.selfloatcolor:              {color10}
+
+! Cores do título normal
+dwm.titlenormfgcolor:           {color7}
+dwm.titlenormbgcolor:           {color0}
+dwm.titlenormbordercolor:       {color8}
+dwm.titlenormfloatcolor:        {color3}
+
+! Cores do título selecionado
+dwm.titleselfgcolor:            {color0}
+dwm.titleselbgcolor:            {color2}
+dwm.titleselbordercolor:        {color2}
+dwm.titleselfloatcolor:         {color2}
+
+! Cores das tags norm
+dwm.tagsnormfgcolor:           {color0}
+dwm.tagsnormbgcolor:           {color14}
+dwm.tagsnormbordercolor:       {color14}
+dwm.tagsnormfloatcolor:        {color14}
+
+
+!Cores das tags selecionadas
+dwm.tagsselfgcolor:             {color0}
+dwm.tagsselbgcolor:             {color14}
+dwm.tagsselbordercolor:         {color14}
+dwm.tagsselfloatcolor:          {color14}
+
+!res ocultas
+dwm.hidnormfgcolor:             {color8}
+dwm.hidselfgcolor:              {color10}
+dwm.hidnormbgcolor:             {color0}
+dwm.hidselbgcolor:              {color0}
+
+! Cores de urgência
+dwm.urgfgcolor:                 {color0}
+dwm.urgbgcolor:                 {color10}
+dwm.urgbordercolor:             {color10}
+dwm.urgfloatcolor:              {color10}
+
+dwm.c000000:                    {color0}

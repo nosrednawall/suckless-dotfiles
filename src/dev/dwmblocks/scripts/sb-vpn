@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+status=$(ip -f inet address | grep inet | grep -E 'wg0$' -ic)
+
+if [ $status -eq 1 ]; then
+    vpn="^c#dc322f^󰢭 ^d^VPN  "
+else
+    vpn=""
+fi
+
+echo "$vpn"

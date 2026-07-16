@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+
+# Configuration options
+wallpaper_dir="$HOME/.wallpapers"
+json_dir="~/.cache/wal/colors.json" #pywal
+
+if [ $# -eq 0 ]; then
+    echo "Uso: $0 {dark|light}"
+    exit 1
+fi
+
+# Check if filename argument is provided
+if [ $# -eq 1 ]; then
+    # Select a random file from the wallpaper directory
+    filename="$(find $wallpaper_dir/ -type f \( -iname \*.jpg -o -iname \*.png -o -iname \*.jpeg -o -iname \*.gif \) | shuf -n 1)"
+else
+    # Use the provided argument as the filename
+    filename="$2"
+fi
+
+COLOR_MODE="$1"
+
+dunstify "Aplicando tema" "Gerando schema de cores com Pywal.." -h int:value:10  -i /usr/share/icons/ePapirus/16x16/status/package-reinstall.svg
+
+# Gera o scheme das cores
+if [ "${COLOR_MODE}" = "dark" ];then
+
+    #wal -i "$filename"
+    #wpg -a "$filename" ; wpg -s  "$filename" 2>/dev/null
+    wal --cols16 "darken" -i "$filename"
+    sleep 2
+    feh --bg-fill $filename 2>/dev/null
+else
+    #wal -l -i "$filename"
+    wal --cols16 "lighten" -i "$filename"
+    sleep 2
+    feh --bg-fill $filename 2>/dev/null
+fi
+dunstify "Aplicando tema" "Gerando arquivos de temas com o schema gerado..." -h int:value:10  -i /usr/share/icons/ePapirus/16x16/status/package-reinstall.svg
+# Carrega os valores das cores
+pywal_color0="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color0')"
+pywal_color1="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color1')"
+pywal_color2="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color2')"
+pywal_color3="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color3')"
+pywal_color4="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color4')"
+pywal_color5="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color5')"
+pywal_color6="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color6')"
+pywal_color7="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color7')"
+pywal_color8="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color8')"
+pywal_color9="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color9')"
+pywal_color10="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color10')"
+pywal_color11="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color11')"
+pywal_color12="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color12')"
+pywal_color13="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color13')"
+pywal_color14="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color14')"
+pywal_color15="$(cat ~/.cache/wal/colors.json | jq -r '.colors.color15')"
+pywal_background="$(cat ~/.cache/wal/colors.json | jq -r '.special.background')"
+pywal_foreground="$(cat ~/.cache/wal/colors.json | jq -r '.special.foreground')"
+pywal_cursor="$(cat ~/.cache/wal/colors.json | jq -r '.special.cursor')"
+
+# Salva a configuracao para o DWM
+rm -rf $HOME/.config/suckless/dwm/themes/pywal_${COLOR_MODE}.h
+cat > $HOME/.config/suckless/dwm/themes/pywal_${COLOR_MODE}.h << EOF
+static char normfgcolor[]                = "${pywal_color2}";
+static char normbgcolor[]                = "${pywal_color0}";
+static char normbordercolor[]            = "${pywal_color0}";
+static char normfloatcolor[]             = "${pywal_color0}";
+
+static char selfgcolor[]                 = "${pywal_color7}";
+static char selbgcolor[]                 = "${pywal_color2}";
+static char selbordercolor[]             = "${pywal_color7}";
+static char selfloatcolor[]              = "${pywal_color2}";
+
+static char titlenormfgcolor[]           = "${pywal_foreground}";
+static char titlenormbgcolor[]           = "${pywal_background}";
+static char titlenormbordercolor[]       = "${pywal_background}";
+static char titlenormfloatcolor[]        = "${pywal_background}";
+
+static char titleselfgcolor[]            = "${pywal_foreground}";
+static char titleselbgcolor[]            = "${pywal_background}";
+static char titleselbordercolor[]        = "${pywal_color2}";
+static char titleselfloatcolor[]         = "${pywal_color2}";
+
+static char tagsnormfgcolor[]            = "${pywal_color7}";
+static char tagsnormbgcolor[]            = "${pywal_color0}";
+static char tagsnormbordercolor[]        = "${pywal_color0}";
+static char tagsnormfloatcolor[]         = "${pywal_color2}";
+
+static char tagsselfgcolor[]             = "${pywal_foreground}";
+static char tagsselbgcolor[]             = "${pywal_color0}";
+static char tagsselbordercolor[]         = "${pywal_color2}";
+static char tagsselfloatcolor[]          = "${pywal_color2}";
+
+static char hidnormfgcolor[]             = "${pywal_color13}";
+static char hidselfgcolor[]              = "${pywal_color14}";
+static char hidnormbgcolor[]             = "${pywal_color0}";
+static char hidselbgcolor[]              = "${pywal_color0}";
+
+static char urgfgcolor[]                 = "${pywal_color0}";
+static char urgbgcolor[]                 = "${pywal_color15}";
+static char urgbordercolor[]             = "${pywal_color3}";
+static char urgfloatcolor[]              = "${pywal_color2}";
+
+static char c000000[]                    = "#000000";
+
+static char ltsymbolbgcolor[]            = "${pywal_background}";
+static char ltsymbolfgcolor[]            = "${pywal_color6}";
+
+static char tagsunusedfgcolor[]        = "${pywal_color8}"; // Cor do texto para tags não utilizadas
+static char tagsunusedbgcolor[]        = "${pywal_color0}"; // Cor de fundo para tags não utilizadas
+static char tagsunusedbordercolor[]    = "${pywal_color9}"; // Cor da borda para tags não utilizadas
+static char tagsunusedfloatcolor[]     = "${pywal_color10}"; // Cor de flutuação para tags não utilizadas
+EOF
+
+# Salva a configuracao para o dmenu
+rm -rf $HOME/.config/suckless/dmenu/themes/pywal_${COLOR_MODE}.h
+cat > $HOME/.config/suckless/dmenu/themes/pywal_${COLOR_MODE}.h << EOF
+static const char *colors[SchemeLast][2] = {
+/*                            fg         bg       */
+[SchemeNorm]          = { "${pywal_color7}", "${pywal_background}" }, // Fonte normal, fundo normal
+[SchemeSel]           = { "${pywal_background}", "${pywal_color2}" }, // Fonte selecionada, fundo selecionado
+[SchemeBorder]        = { "${pywal_color0}", "${pywal_color7}" }, // Borda normal, borda selecionada
+[SchemeSelHighlight]  = { "${pywal_color0}", "${pywal_color2}" }, // Destaque de seleção
+[SchemeNormHighlight] = { "${pywal_color7}", "${pywal_color0}" }, // Destaque normal
+[SchemeOut]           = { "${pywal_color7}", "${pywal_color6}" }, // Destaque de saída
+};
+EOF
+
+# Salva a configuracao para o slock
+rm -rf cat > $HOME/.config/suckless/slock/themes/pywal_${COLOR_MODE}.h
+cat > $HOME/.config/suckless/slock/themes/pywal_${COLOR_MODE}.h << EOF
+static const char *colorname[NUMCOLS] = {
+	[INIT] =   "${pywal_color0}",   /* after initialization */
+	[INPUT] =  "${pywal_color7}",   /* during input */
+	[FAILED] = "${pywal_color9}",   /* wrong password */
+	[CAPS] =   "${pywal_color8}",   /* CapsLock on */
+	[BLOCKS] = "${pywal_color3}",   /* key feedback block */
+};
+EOF
+
+# Salva a configuracao para o slock
+rm -rf $HOME/.config/suckless/st/themes/pywal_${COLOR_MODE}.h
+cp $HOME/.cache/wal/colors-wal-st.h $HOME/.config/suckless/st/themes/pywal_${COLOR_MODE}.h
+
+# Salva cores para o rofi
+# Substitui cores básicas
+sed -i "s/^\([[:space:]]*bg0[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color0\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*bg1[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color0\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*grey0[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color8\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*fg0[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color7\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+
+# Substitui cores acentuadas
+sed -i "s/^\([[:space:]]*blue[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color1\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*red[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color2\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*orange[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color3\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+sed -i "s/^\([[:space:]]*green[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color4\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+
+# Substitui cor específica do statusline
+sed -i "s/^\([[:space:]]*bgStatusline3[[:space:]]*:[[:space:]]*\)#[0-9a-fA-F]\{6\}\(;\)/\1$pywal_color8\2/" $HOME/.config/rofi/themes/pywal_${COLOR_MODE}.rasi
+
+# Salva a configuracao para o dunst
+sed -i "s/^[[:space:]]*\(frame_color[[:space:]]*=[[:space:]]*\"\).*\(\"\)/\1$pywal_color7\2/" ~/.config/dunst/themes/Pywal_${COLOR_MODE^}
+sed -i "s/^[[:space:]]*\(background[[:space:]]*=[[:space:]]*\"\).*\(\"\)/\1$pywal_color0\2/" ~/.config/dunst/themes/Pywal_${COLOR_MODE^}
+sed -i "s/^[[:space:]]*\(foreground[[:space:]]*=[[:space:]]*\"\).*\(\"\)/\1$pywal_color7\2/" ~/.config/dunst/themes/Pywal_${COLOR_MODE^}

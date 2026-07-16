@@ -1,0 +1,13 @@
+#!/bin/sh
+mkdir -p /home/$USER/.cache/ncmpcpp/previews
+music_dir="$HOME/Músicas"
+previewdir="$HOME/.cache/ncmpcpp/previews"
+filename="$(mpc --format "$music_dir"/%file% current)"
+previewname="$previewdir/$(mpc --format %album% current | base64).png"
+
+[ -e "$previewname" ] || ffmpeg -y -i "$filename" -an -vf scale=512:512 "$previewname" > /dev/null 2>&1
+
+# Atualiza dwmblocks
+kill -35 $(pidof dwmblocks)
+
+notify-send -r 27072 "Now Playing" "$(mpc --format '%title% \n%artist% - %album%' current)" -i "$previewname"

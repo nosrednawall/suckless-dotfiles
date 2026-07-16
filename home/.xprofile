@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Carrega as configurações do Xresources
+xrdb ~/.Xresources
+
+# para a nvidia
+#xrandr --setprovideroutputsource modesetting NVIDIA-0
+#xrandr --auto
+
+# JAVA Bug
+if which wmname; then
+  wmname LG3D
+fi
+export AWT_TOOLKIT="MToolkit"
+export _JAVA_AWT_WM_NONREPARENTING="1"
+export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+
+# Para o virt manager
+export LIBVIRT_DEFAULT_URI='qemu:///system'
+
+# Exports para o path do dwm
+#export XDG_CURRENT_DESKTOP="DWM"
+#export DESKTOP_SESSION="dwm"
+#export GDK_BACKEND="x11"
+#export GTK_THEME="Adwaita"
+#export QT_QPA_PLATFORMTHEME="gtk2"
+#export MOZ_ENABLE_WAYLAND=0

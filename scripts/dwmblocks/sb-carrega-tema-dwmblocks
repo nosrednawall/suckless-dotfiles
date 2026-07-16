@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+# Carrega as cores
+arquivo_cores="$HOME/.theme_selected"
+
+# Carrega informacoes do modo de operacao
+arquivo_modo="$HOME/.cache/dwmblocks_modo_operacao"
+
+if [ -f "$arquivo_modo" ]; then
+    source "$arquivo_modo"
+    theme_type="${THEME:-icon-color}"
+else
+    theme_type="icon-color"
+fi
+
+if [ -f "$arquivo_cores" ]; then
+    source "$arquivo_cores"
+fi
+
+# Função principal
+aplicar_tema() {
+    local icone="$1"
+    local conteudo="$2"
+    local cor_forte="$3"
+    local cor_fraca="$4"
+
+    if [ -z "$icone" ] && [ -z "$conteudo" ]; then
+        echo ""
+        return
+    fi
+
+    case "$theme_type" in
+        "colorfull")
+            echo "^b$cor_forte^^c$COLOR_BACKGROUND^ $icone ^d^^c$COLOR_BACKGROUND^^b$cor_fraca^ $conteudo ^d^ "
+            ;;
+        "colorfull-icon")
+            echo "^b$cor_forte^^c$COLOR_BACKGROUND^ $icone ^d^^c$COLOR_TEXT^ $conteudo ^d^ "
+            ;;
+        "brackets")
+            echo "[^b$COLOR_BACKGROUND^^c$cor_forte^$icone^d^^b$COLOR_BACKGROUND^^c$cor_fraca^ $conteudo^d^] "
+            ;;
+        "rounded")
+            echo "(^b$COLOR_BACKGROUND^^c$cor_forte^$icone^d^^b$COLOR_BACKGROUND^^c$cor_fraca^ $conteudo^d^) "
+            ;;
+        "keys")
+            echo "{^b$COLOR_BACKGROUND^^c$cor_forte^$icone^d^^b$COLOR_BACKGROUND^^c$cor_fraca^ $conteudo^d^} "
+            ;;
+        "simple")
+            echo " ^b$COLOR_BACKGROUND^^c$COLOR_TEXT^$icone $conteudo^d^ "
+            ;;
+        "simple-color")
+            echo " ^b$COLOR_BACKGROUND^^c$cor_forte^$icone $conteudo^d^ "
+            ;;
+        "icon-color")
+            echo " ^b$COLOR_BACKGROUND^^c$cor_forte^$icone^d^^b$COLOR_BACKGROUND^^c$COLOR_TEXT^ $conteudo^d^ "
+            ;;
+        "separador")
+            echo "| ^b$COLOR_BACKGROUND^^c$cor_forte^$icone^d^^b$COLOR_BACKGROUND^^c$cor_fraca^ $conteudo^d^ "
+            ;;
+        *)
+            echo " ^b$COLOR_BACKGROUND^^c$COLOR_TEXT^$icone $conteudo^d^ "
+            ;;
+    esac
+}
+
+export -f aplicar_tema

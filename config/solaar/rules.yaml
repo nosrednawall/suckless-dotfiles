@@ -1,0 +1,43 @@
+%YAML 1.3
+---
+- Rule:
+  - Key: [Emoji Smiley Heart Eyes, pressed]
+  - KeyPress:
+    - Home
+    - click
+- Rule:
+  - Key: [Emoji Crying Face, pressed]
+  - KeyPress:
+    - Page_Up
+    - click
+- Rule:
+  - Key: [Emoji Smiley, pressed]
+  - KeyPress:
+    - Page_Down
+    - click
+- Rule:
+  - Key: [Emoji Smilie With Tears, pressed]
+  - KeyPress:
+    - End
+    - click
+- Rule:
+  - Key: [Open Emoji Panel, pressed]
+  - KeyPress:
+    - [Super_L, k]
+    - click
+- Rule:
+  - Key: [Voice Dictation, pressed]
+  - KeyPress:
+    - [Super_L, m]
+    - click
+- Rule:
+  - Key: [Mute Microphone, pressed]
+  - KeyPress:
+    - [Control_L, XF86_AudioMute]
+    - click
+- Rule:
+  - Key: [Show Desktop, pressed]
+  - KeyPress:
+    - [Super_L, Shift_L, W]
+    - click
+...

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Carrega o tema
+source $HOME/.theme_selected
+
+# Toca som de switch
+ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)
+
+sleep .1
+
+# Verifique o estado atual do Caps Lock
+CAPS_STATE=$(xset q | grep "Caps Lock:" | awk '{print $4}')
+
+if [ "$CAPS_STATE" == "on" ]; then
+    texto_notify="Capslock ON"
+    icon="caps-lock-on.svg"
+else
+    texto_notify="Capslock OFF"
+    icon="caps-lock-off.svg"
+fi
+
+# mostra notificacao de uso do capslock
+notify-send -t 3000 "$texto_notify" "$CAPS_STATE" --icon="$THEME_ICON_DUNST/24x24/panel/$icon"

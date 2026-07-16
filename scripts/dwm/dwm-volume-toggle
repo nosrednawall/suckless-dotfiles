@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+pactl set-sink-mute @DEFAULT_SINK@ toggle
+is_mute=$(pactl get-sink-mute @DEFAULT_SINK@ | grep 'sim' -ic)
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)
+
+if [ "$is_mute" -eq 1 ]; then
+    notify-send -t 3000 "󰝟 Mute:Yes" "Volume mutado" --icon="/usr/share/icons/ePapirus/16x16/actions/audio-volume-muted.svg"
+else
+    notify-send -t 3000 " Mute:No" "Volume desmutado" --icon="/usr/share/icons/ePapirus/16x16/actions/audio-volume-high.svg"
+fi

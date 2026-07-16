@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+PASTA="$HOME/git/cheatsheets"
+# Lista apenas os nomes dos arquivos
+IMAGENS=$(find "$PASTA" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" -o -iname "*.bmp" -o -iname "*.webp" \) -printf "%f\n" | sort)
+
+# Mostra menu textual
+SELECIONADO=$(echo "$IMAGENS" | dmenu -i -l 15 -p "Imagem:")
+
+if [ -n "$SELECIONADO" ]; then
+    xdg-open "$PASTA/$SELECIONADO"
+fi

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Captura o layout atual do teclado
+lay=$(setxkbmap -query 2>/dev/null | grep layout | awk '{print $2}')
+if [[ -z "$lay" ]]; then
+    lay="unknown"
+fi
+
+layout_atual="󰌌"
+
+# Verifique o estado atual do Caps Lock
+CAPS_STATE=$(xset q 2>/dev/null | grep "Caps Lock:" | awk '{print $4}')
+if [[ "$CAPS_STATE" == "on" ]]; then
+    caps="󰪛"
+else
+    caps=""
+fi
+
+# Verificar o estado atual do Num Lock
+NUMLOCK_STATE=$(xset q 2>/dev/null | grep "Num Lock:" | awk '{print $8}')
+if [[ "$NUMLOCK_STATE" == "on" ]]; then
+    num="󰎠"
+else
+    num=""
+fi
+
+# Lógica para visualização
+output="$layout_atual"
+[[ ! -z "$caps" ]] && output="$output $caps"
+[[ ! -z "$num" ]] && output="$output $num"
+saida=$output
+
+saida_formatada=$(aplicar_tema "$saida" "$lay" "$COLOR_5" "$COLOR_14")
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        echo ""
+    ;;
+    *)
+        # echo "$output ^d^^c$COLOR_BACKGROUND^^b$COLOR_14^ $lay ^d^ "
+        echo "$saida_formatada"
+    ;;
+esac
+
+# Funções clicáveis
+case $BUTTON in
+    1) bash ~/.config/suckless/scripts/dwm/dwm-altera-layout-teclado ;;
+    3) bash ~/.config/suckless/scripts/dmenu/dmenu-keyboard ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+# Garante que o script finalize com sucesso
+exit 0

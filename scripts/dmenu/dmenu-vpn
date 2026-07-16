@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+status_wireguard_casa=$(ip -f inet address | grep inet | grep -E 'wg0$' -ic)
+if [ "$status_wireguard_casa" = "1" ]; then
+    casa_opcoes="Casa\n  1-Desligar"
+else
+    casa_opcoes="Casa\n  1-Ligar"
+fi
+
+status_nordvpn=$(nordvpn status | grep -E "^Status: Connected$" -ic)
+if [ "$status_nordvpn" = "1" ]; then
+    nordvpn_country=$(nordvpn status | grep "Country" | sed 's/Country: //' | tr ' ' '_')
+    nordvpn_city=$(nordvpn status | grep "City" | sed 's/City: //' | tr ' ' '_')
+    nordvpn_opcoes="NordVPN - Connected on $nordvpn_country - $nordvpn_city\n  3-Mudar País\n  3-Mudar Cidade\n  3-Desligar"
+else
+    nordvpn_opcoes="NordVPN\n  3-Ligar"
+fi
+
+
+# Variable passed to dmenu
+#options="$casa_opcoes\n$tailscale_opcoes\n$nordvpn_opcoes"
+options="$casa_opcoes\n$nordvpn_opcoes"
+# Apresenta Dmenu
+chosen="$(echo -e "$options" | dmenu -p "Liga e desliga VPN " )"
+
+# Aplica selecao
+case $chosen in
+    "  1-Ligar")
+         SUDO_ASKPASS=/usr/lib/ssh/gnome-ssh-askpass3 sudo wg-quick up wg0
+         notify-send -t 3000 "VPN" "VPN Ligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+
+    ;;
+    "  1-Desligar")
+         SUDO_ASKPASS=/usr/lib/ssh/gnome-ssh-askpass3 sudo wg-quick down wg0
+         notify-send -t 3000 "VPN" "VPN Desligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+    ;;
+    "  2-Ligar")
+         tailscale up
+         notify-send -t 3000 "VPN Tailscale" "VPN Tailscale Ligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+
+         x-www-browser "tailscale.tail65e7c9.ts.net"
+    ;;
+    "  2-Desligar")
+         tailscale down
+         notify-send -t 3000 "VPN Tailscale" "VPN Tailscale Desligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+
+    ;;
+    "  3-Ligar")
+         nordvpn c
+         notify-send -t 3000 "NORDVPN" "VPN Ligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+
+    ;;
+    "  3-Desligar")
+         nordvpn d
+         notify-send -t 3000 "NORDVPN" "VPN Desligada" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+
+    ;;
+    "  3-Mudar País")
+        # Captura a lista de cidades dos EUA do comando nordvpn
+         COUNTRIES=$(nordvpn countries)
+
+         # Verifica se o comando nordvpn retornou cidades
+         if [ -z "$COUNTRIES" ]; then
+             echo "Erro: Nenhum país encontrado."
+             exit 1
+         fi
+         # Usa dmenu para exibir as cidades e capturar a seleção do usuário
+         SELECTED_COUNTRY=$(echo "$COUNTRIES" | tr ' ' '\n' | dmenu -p "Selecione um país:")
+
+         # Verifica se o usuário selecionou uma cidade
+         if [ -z "$SELECTED_COUNTRY" ]; then
+             echo "Nenhuma país selecionado."
+             exit 1
+         fi
+
+         nordvpn c $SELECTED_COUNTRY
+         notify-send -t 3000 "NORDVPN" "Alterado País para $SELECTED_COUNTRY" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+    ;;
+    "  3-Mudar Cidade")
+
+        # Captura a lista de cidades dos EUA do comando nordvpn
+         CITIES=$(nordvpn cities $nordvpn_country)
+
+         # Verifica se o comando nordvpn retornou cidades
+         if [ -z "$CITIES" ]; then
+             echo "Erro: Nenhuma cidade encontrada."
+             exit 1
+         fi
+         # Usa dmenu para exibir as cidades e capturar a seleção do usuário
+         SELECTED_CITY=$(echo "$CITIES" | tr ' ' '\n' | dmenu -p "Selecione uma cidade:")
+
+         # Verifica se o usuário selecionou uma cidade
+         if [ -z "$SELECTED_CITY" ]; then
+             echo "Nenhuma cidade selecionada."
+             exit 1
+         fi
+
+         # Troca a cidade
+         nordvpn connect "$SELECTED_CITY"
+         notify-send -t 3000 "NORDVPN" "Alterado cidade para $SELECTED_CITY" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+    ;;
+esac
+kill -10 $(pidof dwmblocks)

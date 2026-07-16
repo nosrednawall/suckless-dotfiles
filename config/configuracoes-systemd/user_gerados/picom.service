@@ -1,0 +1,10 @@
+[Unit]
+Description=Picom compositor
+After=graphical.target
+
+[Service]
+ExecStart=/usr/bin/picom -b
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

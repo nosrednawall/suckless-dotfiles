@@ -1,0 +1,4 @@
+
+archlinux
+
+sudo pacman -S libconfig libxft harfbuzz imlib2 libxcursor freetype2 pkgconf

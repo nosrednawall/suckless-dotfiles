@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Solicita o termo de pesquisa ao usuário
+search_term=$(echo "" | dmenu -p "Digite o termo de pesquisa para o YouTube:")
+
+# Verifica se o usuário não cancelou a pesquisa
+if [ -z "$search_term" ]; then
+    echo "Nenhum termo de pesquisa fornecido. Saindo."
+    exit 1
+fi
+
+# Pesquisa vídeos no YouTube utilizando yt-dlp
+# O parâmetro `ytsearch10:` busca 10 vídeos relacionados ao termo
+video_list=$(yt-dlp -j "ytsearch10:$search_term" | jq -r '.fulltitle + " | " + .webpage_url')
+
+# Verifica se houve resultados da pesquisa
+if [ -z "$video_list" ]; then
+    echo "Nenhum vídeo encontrado para '$search_term'. Saindo."
+    exit 1
+fi
+
+# Exibe a lista de vídeos no dmenu e captura o título e a URL do vídeo escolhido
+selected_video=$(echo "$video_list" | dmenu -p "Escolha um vídeo" | awk -F ' | ' '{print $2}')
+
+# Verifica se uma URL foi selecionada
+if [ -n "$selected_video" ]; then
+    # Abre o vídeo no mpv
+    mpv "$selected_video" &
+else
+    echo "Nenhum vídeo selecionado. Saindo."
+    exit 1
+fi

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Toca som de switch
+ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)

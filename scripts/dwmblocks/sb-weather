@@ -1,0 +1,280 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Carrega informacoes do modo de operacao do weather
+weather_modo="$HOME/.cache/dwmblocks_weather_mode"
+if [ -f $weather_modo ]; then
+    source $weather_modo
+else
+    WEATHER_MODE="SHOW"
+fi
+
+# Configurações do script
+API_KEY="8b05d62206f459e1d298cbe5844d7d87"
+UNITS="metric"  # Use 'imperial' para Fahrenheit
+LANG="pt_br"    # Idioma da descrição do tempo
+
+# Função para obter a localização atual (latitude e longitude)
+get_location() {
+    LOCATION=$(curl -sf "http://ip-api.com/json/")
+    if [ -z "$LOCATION" ]; then
+        echo "Erro: Não foi possível obter a localização."
+        exit 1
+    fi
+    LAT=$(echo "$LOCATION" | jq -r '.lat')
+    LON=$(echo "$LOCATION" | jq -r '.lon')
+}
+
+# Função para obter o nome da cidade com base nas coordenadas
+get_city_name() {
+    CITY_DATA=$(curl -sf "http://api.openweathermap.org/geo/1.0/reverse?lat=${LAT}&lon=${LON}&limit=1&appid=${API_KEY}")
+    if [ -z "$CITY_DATA" ]; then
+        echo "Erro: Não foi possível obter o nome da cidade."
+        exit 1
+    fi
+    CITY=$(echo "$CITY_DATA" | jq -r '.[0].name')
+    COUNTRY=$(echo "$CITY_DATA" | jq -r '.[0].country')
+    CITY="${CITY},${COUNTRY}"
+}
+
+# Obtém a localização e o nome da cidade
+get_location
+get_city_name
+
+# Substitui espaços por %20 na cidade
+CITY_ENCODED=$(echo "$CITY" | sed 's/ /%20/g')
+
+# Monta a URL da API
+URL="http://api.openweathermap.org/data/2.5/weather?q=${CITY_ENCODED}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}"
+URL_FORECAST="api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=${UNITS}&lang=${LANG}"
+
+# Requisição e processamento
+WEATHER=$(curl -sf "$URL")
+FORECAST=$(curl -sf "$URL_FORECAST")
+
+# Separa a informacao recebida em variaveis
+WEATHER_DESC=$(echo "$WEATHER" | jq -r ".weather[0].description")
+WEATHER_TEMP=$(echo "$WEATHER" | jq ".main.temp" | cut -d "." -f 1)
+WEATHER_ICON_CODE=$(echo "$WEATHER" | jq -r ".weather[].icon" | head -1)
+WEATHER_FEELS_LIKE=$(echo "$WEATHER" | jq ".main.feels_like" | cut -d "." -f 1)
+WEATHER_ICON=""
+WEATHER_HEX=""
+
+case $WEATHER_ICON_CODE in
+    "01d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#ffd86b"
+        WEATHER_HEX="$COLOR_1"
+        WEATHER_HEX2="$COLOR_9"
+        ;;
+    "01n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#fcdcf6"
+        WEATHER_HEX="$COLOR_4"
+        WEATHER_HEX2="$COLOR_12"
+        ;;
+    "02d")
+        #WEATHER_ICON=""
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_6"
+        WEATHER_HEX2="$COLOR_14"
+        ;;
+    "02n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_6"
+        WEATHER_HEX2="$COLOR_14"
+        ;;
+    "03d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_6"
+        WEATHER_HEX2="$COLOR_14"
+        ;;
+    "03n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_6"
+        WEATHER_HEX2="$COLOR_14"
+        ;;
+    "04d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_6"
+        WEATHER_HEX2="$COLOR_14"
+        ;;
+    "04n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#acb0d0"
+        WEATHER_HEX="$COLOR_8"
+        WEATHER_HEX2="$COLOR_16"
+        ;;
+    "09d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#6b95ff"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "09n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#6b95ff"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "10d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#6b95ff"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "10n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#6b95ff"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "11d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#ffeb57"
+        WEATHER_HEX="$COLOR_1"
+        WEATHER_HEX2="$COLOR_9"
+        ;;
+    "11n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#ffeb57"
+        WEATHER_HEX="$COLOR_1"
+        WEATHER_HEX2="$COLOR_9"
+        ;;
+    "13d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#e3e6fc"
+        WEATHER_HEX="$COLOR_8"
+        WEATHER_HEX2="$COLOR_16"
+        ;;
+    "13n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#e3e6fc"
+        WEATHER_HEX="$COLOR_8"
+        WEATHER_HEX2="$COLOR_16"
+        ;;
+    "40d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#84afdb"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "40n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#84afdb"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "50d")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#84afdb"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    "50n")
+        WEATHER_ICON=""
+        #WEATHER_HEX="#84afdb"
+        WEATHER_HEX="$COLOR_5"
+        WEATHER_HEX2="$COLOR_13"
+        ;;
+    *)
+        WEATHER_ICON=""
+        #WEATHER_HEX="#adadff"
+        WEATHER_HEX="$COLOR_4"
+        WEATHER_HEX2="$COLOR_12"
+        ;;
+esac
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "MEDIO")
+        echo ""
+    ;;
+    *)
+        case  "$WEATHER_MODE" in
+            "SHOW")
+                output=$(aplicar_tema "$WEATHER_ICON" "$WEATHER_TEMP°C $WEATHER_DESC" "$WEATHER_HEX" "$WEATHER_HEX2")
+                echo "$output"
+                # echo "^b$WEATHER_HEX^^c$COLOR_BACKGROUND^ $WEATHER_ICON ^d^^c$COLOR_BACKGROUND^^b$WEATHER_HEX2^ $WEATHER_TEMP°C $WEATHER_DESC ^d^ "
+            ;;
+            "HIDE")
+                output=$(aplicar_tema "$WEATHER_ICON" "$WEATHER_TEMP°C" "$WEATHER_HEX" "$WEATHER_HEX2")
+                echo "$output"
+                #                echo "^b$WEATHER_HEX^^c$COLOR_BACKGROUND^ $WEATHER_ICON ^d^^c$COLOR_BACKGROUND^^b$WEATHER_HEX2^ $WEATHER_TEMP°C ^d^ "
+            ;;
+            "*")
+                echo ""
+            ;;
+        esac
+    ;;
+esac
+
+
+
+# funcoes cliclaveis
+case $BUTTON in
+    1)
+        if [ "$WEATHER_MODE" != "SHOW" ]; then
+            WEATHER_MODE="SHOW"
+        else
+            WEATHER_MODE="HIDE"
+        fi
+
+        rm -rf $HOME/.cache/dwmblocks_weather_mode
+        cat > $HOME/.cache/dwmblocks_weather_mode << EOF
+#!/bin/bash
+WEATHER_MODE="$WEATHER_MODE"
+EOF
+    ;;
+    4)
+        # Extrair informações do JSON usando jq
+        CITY=$(echo "$WEATHER" | jq -r '.name')
+        DESCRIPTION=$(echo "$WEATHER" | jq -r '.weather[0].description')
+        TEMP=$(echo "$WEATHER" | jq -r '.main.temp')
+        FEELS_LIKE=$(echo "$WEATHER" | jq -r '.main.feels_like')
+        HUMIDITY=$(echo "$WEATHER" | jq -r '.main.humidity')
+        WIND_SPEED=$(echo "$WEATHER" | jq -r '.wind.speed')
+        PRESSURE=$(echo "$WEATHER" | jq -r '.main.pressure')
+
+        # Lógica para identificar se a pressão é alta ou baixa
+        if (( $(echo "$PRESSURE > 1013.25" | bc -l) )); then
+            PRESSURE_STATUS="alta"
+        else
+            PRESSURE_STATUS="baixa"
+        fi
+
+        # Formatar a mensagem
+        MESSAGE="Condições Climáticas $CITY:
+- Condição: $DESCRIPTION
+- Temperatura: $TEMP°C (Sensação: $FEELS_LIKE°C)
+- Umidade: $HUMIDITY%
+- Vento: $WIND_SPEED m/s
+- Pressão Atmosférica: $PRESSURE hPa ($PRESSURE_STATUS)"
+
+        notify-send "Informação da previsão do tempo" "$MESSAGE"
+    ;;
+    3)
+        # Processar os dados e formatar a mensagem (mostrando apenas a hora)
+        message=$(echo "$FORECAST" | jq -r '
+" - " + ((.list[0].dt_txt | split(" ")[1]) + ": " + .list[0].weather[0].description + ", " + (.list[0].main.temp | tostring) + "°C\n") +
+" - " +  ((.list[1].dt_txt | split(" ")[1]) + ": " + .list[1].weather[0].description + ", " + (.list[1].main.temp | tostring) + "°C\n") +
+" - " +  ((.list[2].dt_txt | split(" ")[1]) + ": " + .list[2].weather[0].description + ", " + (.list[2].main.temp | tostring) + "°C\n") +
+" - " +  ((.list[3].dt_txt | split(" ")[1]) + ": " + .list[3].weather[0].description + ", " + (.list[3].main.temp | tostring) + "°C\n") +
+  "Cidade: " + .city.name + ", " + .city.country
+')
+        # Enviar a notificação
+        notify-send "Previsão do Tempo - Próximas Horas" "$message"
+
+    ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac

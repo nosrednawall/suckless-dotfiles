@@ -1,0 +1,7 @@
+# Dependencias para o slstatus funcionar
+
+# Build
+sudo apt install make gcc libx11-dev libxft-dev libxinerama-dev
+
+# Scripts
+sudo apt install dunst pulseaudio libnotify-bin brightnessctl lm-sensors mpd ncmpcpp playerctl mpc maim xclip 

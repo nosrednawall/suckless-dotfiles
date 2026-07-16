@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# Lê o nome da distribuição a partir do arquivo /etc/os-release
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        arch)
+            sudo_askpass="/usr/lib/ssh/gnome-ssh-askpass3"
+            ;;
+        debian)
+            sudo_askpass="/usr/bin/ssh-askpass"
+            ;;
+        *)
+            echo "Sistema desconhecido ou não suportado: $ID"
+            ;;
+    esac
+else
+    echo "Não foi possível determinar a distribuição. O arquivo /etc/os-release não existe."
+fi
+
+
+# Pasta base onde os servidores estão listados
+BASE_DIR="/mnt/samba_share"
+
+# Função para listar os compartilhamentos de um servidor
+listar_compartilhamentos() {
+    local server=$1
+
+    # Lista os compartilhamentos do tipo Disk
+    shares=($(smbclient -L $server -U% | awk '/Disk/ {print $1}'))
+
+    for share in "${shares[@]}"; do
+        # Verifica se o compartilhamento está montado
+        mount_point="/mnt/samba_share/$server/$share"
+        if mount | grep -q "$mount_point"; then
+            echo "Desmontar $share de $server"
+        else
+            echo "Montar $share de $server"
+        fi
+    done
+}
+
+# Verifica o status do tailscale
+status_tailscale=$(tailscale status | grep -E "Tailscale is stopped." -ic)
+
+# se tailsscale nao estiver ativo
+if [ $status_tailscale -eq 1 ]; then
+    # coloca os ips da rede local
+    servers=$(ls -1 $BASE_DIR | grep '^192')
+else
+    # coloca os ips do tailscale
+    servers=$(ls -1 $BASE_DIR | grep '^100')
+fi
+
+# Gera a lista de opções para o dmenu
+opcoes(){
+    for server in $servers; do
+        listar_compartilhamentos "$server"
+    done
+    echo "Adicionar compartilhamento remoto"
+    echo "Ligar servidor 192.168.42.198 40:8d:5c:4b:61:7a"
+}
+# Usa o dmenu para selecionar uma opção
+escolha=$(opcoes | dmenu -p "Selecione um compartilhamento:")
+
+# Verifica se uma seleção foi feita
+if [[ -n "$escolha" ]]; then
+
+    acao=$(echo "$escolha" | awk '{print tolower ($1)}')
+    case $acao in
+        "adicionar")
+             server=$(echo "" | dmenu -p "Informe o endereço do servidor:")
+             usuario=$(echo "" | dmenu -p "Informe o nome do usuário:")
+             senha=$(echo "" | dmenu -p "Informe a senha do usuário:")
+             SUDO_ASKPASS="$sudo_askpass" sudo bash $HOME/.config/suckless/scripts/others/gerenciar_storage.sh $acao $server $usuario $senha
+             notify-send -t 3000 "Adicionado $server $usuario com sucesso!"
+        ;;
+        "ligar")
+             wakeonlan 40:8d:5c:4b:61:7a
+             notify-send -t 3000 "Wake-on-Lan Home Lab" "Enviado sinal para ligar servidor"
+         ;;
+        *)
+             pasta=$(echo "$escolha" | awk '{print $2}')
+             server=$(echo "$escolha" | awk '{print $4}')
+             SUDO_ASKPASS="$sudo_askpass" sudo bash $HOME/.config/suckless/scripts/others/gerenciar_storage.sh $acao $server $pasta
+             notify-send -t 3000 "Rede Interna" "$pasta $acao executado" --icon="/usr/share/icons/ePapirus/16x16/devices/network-vpn.svg"
+        ;;
+    esac
+else
+    exit 0
+fi

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+source ~/.cache/playerctl_selecionado
+
+# Se o player estiver tocando, aplica o play-pause, caso contrario
+# pausa todos os outros e toca o novo
+STATUS_ATUAL=$(playerctl --player=$PLAYER_SELECIONADO status)
+
+if [ $STATUS_ATUAL = "Playing" ]; then
+    playerctl --player=$PLAYER_SELECIONADO play-pause
+else
+    playerctl --all-players pause
+    playerctl --player=$PLAYER_SELECIONADO play-pause
+fi
+~/.local/bin/playerctl_songinfo
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)

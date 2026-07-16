@@ -1,0 +1,12 @@
+;; Exemplo: snippet para ggplot básico
+;; Arquivo: ~/.doom.d/snippets/ess-mode/ggplot
+# -*- mode: snippet -*-
+# name: ggplot
+# key: gg
+# --
+ggplot(data = ${1:df}, aes(x = ${2:x_var}, y = ${3:y_var})) +
+  geom_${4:point}() +
+  labs(title = "${5:Title}",
+       x = "${6:X label}",
+       y = "${7:Y label}") +
+  theme_minimal()

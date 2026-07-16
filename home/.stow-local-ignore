@@ -1,0 +1,41 @@
+# Comments and blank lines are allowed.
+README.md
+RCS
+.+,v
+
+CVS
+\.\#.+       # CVS conflict files / emacs lock files
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+\.gitignore
+
+.+~          # emacs backup files
+\#.*\#       # emacs autosave files
+
+^/README.*
+^/LICENSE.*
+^/COPYING
+
+# Arquivo antigo do meu emacs
+\.emacs.d
+
+# arquivos da build do suckless
+#dwm
+#st
+#slstatus
+#dmenu
+#slock
+nixos-config
+\.themes
+\.icons
+themes
+icons
+fonts.tar.gz
+wallpapers
+icons.tar.gz
+themes.tar.gz

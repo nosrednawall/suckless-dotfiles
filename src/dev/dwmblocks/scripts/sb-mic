@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# funcoes cliclaveis
+case $BUTTON in
+	1) bash ~/.dotfiles/.local/bin/dwm/muta_microfone ;;
+    2) bash ~/.dotfiles/.local/bin/dmenu/dmenu-controle-som ;;
+    3) setsid -f st -e pulsemixer ;;
+    4) bash ~/.dotfiles/.local/bin/dwm/aumenta_volume_microfone ;;
+    5) bash ~/.dotfiles/.local/bin/dwm/diminui_volume_microfone ;;
+	6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+
+# Display an icon if the microphone is muted.
+microfoneOn=$(cat /proc/asound/card0/pcm3p/sub0/status | grep "RUNNING")
+microfone=$(pactl get-source-volume @DEFAULT_SOURCE@ | grep "Volume" | awk '{print$5}' | sed 's/%//')
+muteMic=$(pactl get-source-mute @DEFAULT_SOURCE@ | grep 'sim' -ic)
+
+if [ "$muteMic" -eq 1 ]; then
+    iconMic="^c#4A5947^ $microfone󰏰"
+else
+    iconMic="^c#d33682^ ^d^$microfone󰏰"
+fi
+
+echo "$iconMic  "

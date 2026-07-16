@@ -1,0 +1,1 @@
+sudo pacman -S xcb-util libxau libxdmcp

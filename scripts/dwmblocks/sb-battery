@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Carrega o tema
+source $HOME/.theme_selected
+
+# Identifica os dispositivos de bateria e carregador
+DEVICE_CARREGADOR=$(ls /sys/class/power_supply/ | grep -m1 "ACAD")
+DEVICE_BATERIA=$(ls /sys/class/power_supply/ | grep -m1 "BAT")
+
+
+# Verifica se o carregador existe e está ligado
+if [[ -n "$DEVICE_CARREGADOR" ]] && [[ -e "/sys/class/power_supply/$DEVICE_CARREGADOR/online" ]]; then
+    is_plugged=$(cat "/sys/class/power_supply/$DEVICE_CARREGADOR/online")
+else
+    is_plugged=2 # Valor indicando ausência do carregador
+fi
+
+## Verifica se tem bateria, se tiver pega o status dela
+if [[ -n "$DEVICE_BATERIA" ]]; then
+    battery_level=$(cat "/sys/class/power_supply/$DEVICE_BATERIA/capacity")
+else
+    ## Se não tiver o status é 0
+    battery_level=0
+fi
+
+# Define o ícone e a cor com base no estado do carregador e nível de bateria
+if [[ "$is_plugged" -eq 1 ]]; then
+    icon=""
+    cor_forte="$COLOR_7"
+    cor_fraca="$COLOR_15"
+else
+    case $battery_level in
+        [0-30])
+            icon=""
+            cor_forte="$COLOR_3"
+            cor_fraca="$COLOR_11"
+        ;; # Bateria Critica
+        [31-40])
+            icon=""
+            cor_forte="$COLOR_2"
+            cor_fraca="$COLOR_10"
+        ;; # Bateria baixa
+        [41-60])
+            icon=""
+            cor_forte="$COLOR_1"
+            cor_fraca="$COLOR_9"
+        ;; # Bateria moderada
+        [61-90])
+            icon=""
+            cor_forte="$COLOR_7"
+            cor_fraca="$COLOR_15"
+        ;; # Bateria boa
+        *)
+            icon=""
+            cor_forte="$COLOR_8"
+            cor_fraca="$COLOR_16"
+        ;; # Bateria cheia
+    esac
+fi
+
+bateria_status=$(aplicar_tema "$icon" "$battery_level" "$cor_forte" "$cor_fraca")
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        #echo "$icon$battery_level^d^  "
+        # Saída formatada
+        #if [ $battery_level -gt 97 ]; then
+        #    echo ""
+        #else
+        echo "$bateria_status"
+        #fi
+    ;;
+esac
+
+# Funções clicáveis
+case $BUTTON in
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+exit 0

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+day=$(date "+%d")
+image="/usr/share/icons/Numix/64/places/calendar-$day.svg"
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+	    data=$(date +'%d/%m')
+    ;;
+	"MEDIO")
+		data=$(date +'%d/%m')
+	;;
+    "ICONES")
+        data=$(date +"%d/%m" | sed 's/  / /g')
+    ;;
+	*)
+		data=$(date +"%a %d %b" | sed 's/  / /g')
+    ;;
+esac
+
+data_formatada=$(aplicar_tema "" "$data" $COLOR_7 $COLOR_15)
+echo "$data_formatada"
+
+case $BUTTON in
+    1) dunstify "$(cal | head -n1)" "$(cal | tail -n+2 | sed "/^[[:space:]]*$/d;s/$(date '+%e')\b/<span background='#282828' foreground='#ebdbb2'>$(date '+%e')<\/span>/g;s/  /<span>  <\/span>/g")" ;;
+    3) dunstify "$(cal -3 | head -n1)" "$(cal -3 | tail -n+2 | sed "/^[[:space:]]*$/d;s/$(date '+%e')\b/<span background='#282828' foreground='#ebdbb2'>$(date '+%e')<\/span>/g;s/  /<span>  <\/span>/g")" ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac
+
+exit 0
+

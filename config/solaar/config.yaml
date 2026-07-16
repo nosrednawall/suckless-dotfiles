@@ -1,0 +1,50 @@
+- ''
+- _NAME: Logi POP Keys
+  _absent: [hi-res-scroll, lowres-scroll-mode, hires-smooth-invert, hires-smooth-resolution, hires-scroll-mode, scroll-ratchet, smart-shift, thumb-scroll-invert,
+    thumb-scroll-mode, onboard_profiles, report_rate, report_rate_extended, pointer_speed, dpi, dpi_extended, speed-change, backlight, backlight_level,
+    backlight_duration_hands_out, backlight_duration_hands_in, backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control, rgb_zone_,
+    brightness_control, per-key-lighting, reprogrammable-keys, persistent-remappable-keys, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led,
+    gesture2-gestures, gesture2-divert, gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 4100
+  _modelId: B36500000000
+  _sensitive: {change-host: false, disable-keyboard-keys: false, divert-keys: true, fn-swap: false, multiplatform: false}
+  _serial: 521B6154
+  _unitId: 521B6154
+  _wpid: B365
+  change-host: null
+  disable-keyboard-keys: {1: false, 8: false, 16: false}
+  divert-keys: {110: 1, 228: 0, 229: 0, 230: 0, 231: 0, 232: 0, 233: 0, 259: 1, 260: 1, 261: 1, 262: 1, 263: 1, 264: 1, 266: 0, 284: 1}
+  fn-swap: false
+  multiplatform: 0
+- _NAME: Logi POP Mouse
+  _absent: [hi-res-scroll, hires-smooth-invert, hires-smooth-resolution, hires-scroll-mode, scroll-ratchet, smart-shift, thumb-scroll-invert, thumb-scroll-mode,
+    onboard_profiles, report_rate, report_rate_extended, pointer_speed, dpi_extended, speed-change, backlight, backlight_level, backlight_duration_hands_out,
+    backlight_duration_hands_in, backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control, rgb_zone_, brightness_control, per-key-lighting,
+    fn-swap, persistent-remappable-keys, disable-keyboard-keys, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform, gesture2-gestures,
+    gesture2-divert, gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 4100
+  _modelId: B03000000000
+  _sensitive: {change-host: false, divert-keys: false, dpi: false, lowres-scroll-mode: false, reprogrammable-keys: true}
+  _serial: 27516F9B
+  _unitId: 27516F9B
+  _wpid: B030
+  change-host: null
+  divert-keys: {82: 0, 264: 0}
+  dpi: 2500
+  lowres-scroll-mode: false
+  reprogrammable-keys: {82: 82, 264: 81}
+- _NAME: G203 LIGHTSYNC Gaming Mouse
+  _absent: [hi-res-scroll, lowres-scroll-mode, hires-smooth-invert, hires-smooth-resolution, hires-scroll-mode, scroll-ratchet, smart-shift, thumb-scroll-invert,
+    thumb-scroll-mode, report_rate_extended, pointer_speed, dpi_extended, speed-change, backlight, backlight_level, backlight_duration_hands_out, backlight_duration_hands_in,
+    backlight_duration_powered, backlight-timed, led_control, led_zone_, brightness_control, fn-swap, reprogrammable-keys, persistent-remappable-keys, divert-keys,
+    disable-keyboard-keys, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform, change-host, gesture2-gestures, gesture2-divert,
+    gesture2-params, sidetone, equalizer, adc_power_management]
+  _battery: 0
+  _modelId: C09D00000000
+  _sensitive: {hires-scroll-mode: ignore, hires-smooth-invert: ignore, hires-smooth-resolution: ignore}
+  _unitId: '24002900'
+  dpi: 1600
+  onboard_profiles: 257
+  per-key-lighting: {1: -1, 2: -1, 3: -1}
+  report_rate: 1
+  rgb_control: 0

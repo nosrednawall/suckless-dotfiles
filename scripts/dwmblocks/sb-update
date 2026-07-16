@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+# Lê o nome da distribuição a partir do arquivo /etc/os-release
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        arch)
+            updates=$(checkupdates | wc -l)
+        ;;
+
+        debian)
+            updates=$(apt list --upgradable 2>/dev/null | grep -c 'upgradable')
+        ;;
+        *)
+            echo "Sistema desconhecido ou não suportado: $ID"
+        ;;
+    esac
+else
+    echo "Não foi possível determinar a distribuição. O arquivo /etc/os-release não existe."
+fi
+
+icon="📦"
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    "*")
+        case "$updates" in
+            0)
+                echo ""
+                ;;
+            [1-9]|10)
+                echo "^b$COLOR_7^^c$COLOR_BACKGROUND^ $icon ^d^^c$COLOR_BACKGROUND^^b$COLOR_15^ $updates ^d^ "
+                ;;
+            [1-4][0-9]|50)
+                echo "^b$COLOR_1^^c$COLOR_BACKGROUND^ $icon ^d^^c$COLOR_BACKGROUND^^b$COLOR_9^ $updates ^d^ "
+                ;;
+            [5-9][0-9]|100)
+                echo "^b$COLOR_2^^c$COLOR_BACKGROUND^ $icon ^d^^c$COLOR_BACKGROUND^^b$COLOR_10^ $updates ^d^ "
+                ;;
+            *)
+                echo "^b$COLOR_3^^c$COLOR_BACKGROUND^ $icon ^d^^c$COLOR_BACKGROUND^^b$COLOR_11^ $updates ^d^ "
+                ;;
+        esac
+
+        if [ -n "$updates" ] && [ "$updates" -gt 0 ]; then
+            notify-send -i "/usr/share/icons/Adwaita/24x24/legacy/software-update-available.png" \
+                "󱧕 Atualização Disponível" \
+                "Existem <b>$updates</b> atualizações disponíveis, que são: \n$(checkupdates | sed 's/^/\t/')"
+        fi
+    ;;
+esac
+
+# funcoes cliclaveis
+case $BUTTON in
+    1) st -n "updates" -e sh -c "sudo pacman -Syuv ; kill -36 $(pidof dwmblocks)" & ;;
+    3) x-www-browser "https://flathub.org/" ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac

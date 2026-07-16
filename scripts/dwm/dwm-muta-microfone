@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Carrega o tema
+source $HOME/.theme_selected
+
+pactl set-source-mute @DEFAULT_SOURCE@ toggle
+is_mute=$(pactl get-source-mute @DEFAULT_SOURCE@ | grep -E 'sim|yes' -ic)
+
+# Atualiza dwmblocks
+kill -10 $(pidof dwmblocks)
+
+
+if [ "$is_mute" -eq 1 ]; then
+    notify-send -t 3000 " Mic Mute:Yes" "Microfone mutado" --icon="$THEME_ICON_DUNST/16x16/devices/audio-input-microphone.svg"
+else
+    notify-send -t 3000 " Mic Mute:No" "Microfone desmutado" --icon="$THEME_ICON_DUNST/16x16/devices/audio-input-microphone.svg"
+fi

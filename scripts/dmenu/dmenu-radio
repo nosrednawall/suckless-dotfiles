@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+
+CONFIG_FILE="$HOME/.config/suckless/scripts/dmenu/dmenu-radio.conf"
+PLAYER="mpv"
+PID_FILE="/tmp/dmenu_radio.pid"
+CURRENT_RADIO_FILE="/tmp/dmenu_radio_current"
+
+# Função para obter valores do arquivo .conf
+get_value() {
+    local radio="$1"
+    local field="$2"
+
+    sed -n "/^\[$radio\]/,/^\[/p" "$CONFIG_FILE" | \
+    grep "^$field =" | \
+    head -1 | \
+    cut -d'=' -f2- | \
+    sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//'
+}
+
+# Lista todas as rádios
+get_radios() {
+    grep '^\[.*\]$' "$CONFIG_FILE" | sed 's/^\[//; s/\]$//'
+}
+
+# Salva a rádio atual
+save_current_radio() {
+    echo "$1" > "$CURRENT_RADIO_FILE"
+}
+
+# Carrega a rádio atual
+load_current_radio() {
+    if [[ -f "$CURRENT_RADIO_FILE" ]]; then
+        cat "$CURRENT_RADIO_FILE"
+    else
+        echo ""
+    fi
+}
+
+# Função para obter próximo valor
+proximo_valor() {
+    local valor_busca="$1"
+    local config_file="$CONFIG_FILE"
+
+    # Extrair todos os valores (cada um em uma linha)
+    mapfile -t valores < <(grep '^\[.*\]$' "$config_file" | sed 's/^\[//; s/\]$//')
+
+    # Encontrar o índice do valor atual
+    local indice=-1
+    for i in "${!valores[@]}"; do
+        if [[ "${valores[$i]}" == "$valor_busca" ]]; then
+            indice=$i
+            break
+        fi
+    done
+
+    # Se encontrou, retorna o próximo ou o primeiro
+    if [[ $indice -ne -1 ]]; then
+        if [[ $indice -eq $((${#valores[@]} - 1)) ]]; then
+            # É o último, retorna o primeiro
+            echo "${valores[0]}"
+        else
+            # Retorna o próximo (linha seguinte)
+            echo "${valores[$((indice + 1))]}"
+        fi
+    else
+        echo "Erro: '$valor_busca' não encontrado" >&2
+        return 1
+    fi
+}
+
+# Verifica se há uma rádio tocando
+is_playing() {
+    if [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        return 0
+    else
+        rm -f "$PID_FILE" 2>/dev/null
+        return 1
+    fi
+}
+
+# Pausa/Resume usando playerctl
+toggle_pause() {
+    playerctl --player=mpv play-pause 2>/dev/null
+}
+
+# Para a reprodução e mata o mpv
+stop_radio() {
+    if [[ -f "$PID_FILE" ]]; then
+        kill "$(cat "$PID_FILE")" 2>/dev/null
+        rm -f "$PID_FILE"
+    fi
+
+    # Mata o mpv se estiver rodando
+    if pgrep -x "mpv" > /dev/null; then
+        pkill -x "mpv"
+    fi
+
+    rm -f "$CURRENT_RADIO_FILE"
+}
+
+# Toca uma rádio
+play_radio() {
+    local radio="$1"
+    local stream_url=$(get_value "$radio" "stream")
+    local tags=$(get_value "$radio" "tags")
+
+    if [[ -z "$stream_url" ]]; then
+        echo "Stream não encontrada para: $radio" | dmenu -p "ERRO" -l 1
+        return 1
+    fi
+
+    # Para a rádio atual se estiver tocando
+    if is_playing; then
+        stop_radio
+    fi
+
+    # Salva a rádio atual
+    save_current_radio "$radio"
+
+    # Inicia o player
+    $PLAYER --no-video "$stream_url" > /dev/null 2>&1 &
+    echo $! > "$PID_FILE"
+
+    # Aguarda o player inicializar
+    sleep 1
+
+    # Notifica
+    notify-send "🎵 Tocando agora" "$radio\n$tags" 2>/dev/null || echo "Tocando: $radio - $tags"
+}
+
+# Menu quando não há rádio tocando
+main_menu_no_playing() {
+    local selected=$(get_radios | dmenu -p "🎵 Selecione uma rádio" -l 10)
+    if [[ -n "$selected" ]]; then
+        play_radio "$selected"
+    fi
+}
+
+# Menu quando há rádio tocando
+main_menu_playing() {
+    local radio_atual=$(load_current_radio)
+    local current_metadata=$(playerctl --player=mpv metadata --format "{{ artist }} - {{ title }}" 2>/dev/null)
+    [[ -z "$current_metadata" ]] && current_metadata="Rádio tocando"
+
+    local options="▶️  Play/Pause\n⏹️  Stop\n⏭️  Próxima Rádio\n📻  Trocar rádio\n🔊  Volume +10%\n🔉  Volume -10%"
+    local selected=$(echo -e "$options" | dmenu -p "🎵 $radio_atual | $current_metadata" -l 6)
+
+    case "$selected" in
+        "▶️  Play/Pause")
+            toggle_pause
+            sleep 0.5
+            main_menu_playing
+            ;;
+        "⏹️  Stop")
+            stop_radio
+            # Após stop, sai do script (não volta ao menu)
+            exit 0
+            ;;
+        "⏭️  Próxima Rádio")
+            if [[ -n "$radio_atual" ]]; then
+                local proxima_radio=$(proximo_valor "$radio_atual")
+                if [[ -n "$proxima_radio" ]]; then
+                    play_radio "$proxima_radio"
+                    # Aguarda e recarrega o menu com a nova rádio
+                    sleep 1
+                    main_menu_playing
+                fi
+            fi
+            ;;
+        "📻  Trocar rádio")
+            local radio_selected=$(get_radios | dmenu -p "🎵 Selecione outra rádio" -l 10)
+            if [[ -n "$radio_selected" ]]; then
+                play_radio "$radio_selected"
+                sleep 1
+                main_menu_playing
+            else
+                main_menu_playing
+            fi
+            ;;
+        "🔊  Volume +10%")
+            playerctl --player=mpv volume 0.1+ 2>/dev/null
+            sleep 0.5
+            main_menu_playing
+            ;;
+        "🔉  Volume -10%")
+            playerctl --player=mpv volume 0.1- 2>/dev/null
+            sleep 0.5
+            main_menu_playing
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+}
+
+# Função principal
+main() {
+    if is_playing; then
+        # Se já tem rádio tocando, mostra o menu de controle
+        main_menu_playing
+    else
+        # Se não tem rádio tocando, mostra a lista de rádios
+        main_menu_no_playing
+    fi
+}
+
+# Executa
+main

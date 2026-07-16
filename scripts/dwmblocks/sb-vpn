@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+###### Observação 2025-07-19
+## Dá um erro bem bizzaro quando abro 2 vpns, no bloco ele para de renderizar as cores, e fica colocando os caracteres sem renderização
+## Acho que isso ocorre porque limitei os blocos pára 80 caracteres de saída
+
+# Carrega função para aplicar o tema e o tema de cores
+source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
+
+status_wg=$(ip -f inet address | grep inet | grep -E 'wg0$' -ic)
+#status_nordvpn=$(nordvpn status | grep -E "^Status: Connected$" -ic)
+#status_tailscale=$(tailscale status 2>/dev/null | grep -E "Active" -ic)
+
+# Array para armazenar as VPNs ativas
+vpns=()
+
+# WireGuard
+if [ $status_wg -eq 1 ]; then
+    vpns+=("$(aplicar_tema "󰢭" "WVPN" "$COLOR_4" "$COLOR_12")")
+fi
+
+# NordVPN
+#if [ $status_nordvpn -eq 1 ]; then
+#    vpns+=("$(aplicar_tema "󰢭" "NVPN" "$COLOR_5" "$COLOR_13")")
+#fi
+
+# Tailscale - corrigida a lógica
+#if [ $status_tailscale -eq 1 ]; then
+#    vpns+=("$(aplicar_tema "󰢭" "TVPN" "$COLOR_6" "$COLOR_14")")
+#fi
+
+# Montar output baseado nas VPNs ativas
+if [ ${#vpns[@]} -eq 0 ]; then
+    output=""
+else
+    # Usar printf para juntar os elementos do array corretamente
+    output=" $(printf '%s' "${vpns[@]}")"
+fi
+
+# Apresentacao condicionada
+case "$OPERATION_MODE" in
+    "MINIMO")
+        echo ""
+    ;;
+    *)
+        # Corrigido: usar $output em vez de $vpns
+        echo "$output"
+    ;;
+esac
+
+# Funções clicáveis
+case $BUTTON in
+    1) bash ~/.config/suckless/scripts/dmenu/dmenu-vpn ;;
+    6) setsid -f st -e emacs -nw "$0" ;;
+esac

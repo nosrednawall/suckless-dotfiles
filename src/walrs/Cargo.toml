@@ -1,0 +1,15 @@
+[package]
+name = "walrs"
+version = "1.1.7"
+edition = "2024"
+description = "walrs - Generate colorscheme from image."
+license = "GPL-3.0" 
+repository = "https://github.com/pixel2175/walrs"
+
+[dependencies]
+argh = "0.1.13"
+color-thief = "0.2.2"
+image = "0.25.6"
+kmeans_colors = "0.7.0"
+palette = "0.7.6"
+palette_extract = "0.1.0"

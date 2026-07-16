@@ -1,0 +1,148 @@
+#!/bin/bash
+
+# Primeiro instalei o sistema base, e em seguida os drivers da nvidia
+# O xorg será instalado com o driver da nvidia
+
+# Sistema
+apt install aptitude htop sudo pv lm-sensors
+
+# Criacao de pastas
+mkdir -p /home/$USER/{Desktop,Downloads,Documentos,git,Imagens/Screenshoots,Músicas,.lyrics,.programas,.appimage}
+
+# Driver Nvidia
+sudo apt install dkms linux-headers-amd64 firmware-misc-nonfree
+sudo apt install nvidia-driver nvidia-xconfig xserver-xorg-video-amdgpu
+sudo reboot
+sudo nvidia-xconfig --prime
+sudo reboot
+nvidia-cuda-dev nvidia-cuda-toolkit libnvidia-encode1
+
+# Dependencias para o dwm compilar
+sudo apt install make gcc libx11-dev libxft-dev libxinerama-dev
+
+# Dependencias st compilar
+sudo apt install libharfbuzz-dev
+
+# Dependencias para o slock compilar
+sudo apt install libimlib2-dev libxrandr-dev
+
+# Gerenciador de sessao
+sudo apt install xinit lightdm
+
+# Configurar o lightdm para abrir apenas no monitor do notebook
+sudo cat > /usr/share/multiple-monitors.sh << EOF
+#!/bin/bash
+xrandr --output  HDMI-0 --off --output eDP-1-1 --primary --mode 1920x1080 --rotate normal --dpi 96
+EOF
+sudo chmod +x /usr/share/multiple-monitors.sh
+sudo sed -i 's|^\#display-setup-script=|display-setup-script=/usr/share/multiple-monitors.sh|' /etc/lightdm/lightdm.conf
+
+# Dependencias dos dotfiles
+sudo apt install stow git x11xserver-utils curl
+cd ~
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+rm .bashrc
+git clone git@github.com:nosrednawall/dotfiles.git .dotfiles --depth 1
+cd .dotfiles
+stow .
+
+# Depois disso entro em cada pasta dos softwares do suckless, e compilo os programas
+# DWM
+cd ~/.dotfiles/.config/suckless/dwm
+make
+sudo make clean install
+
+# st
+cd ~/.dotfiles/.config/suckless/st
+make
+sudo make clean install
+
+# dwmblocks
+cd ~/.dotfiles/.config/suckless/dwmblocks
+make
+sudo make clean install
+
+# slock
+cd ~/.dotfiles/.config/suckless/slock
+make
+sudo make clean install
+
+# dmenu
+cd ~/.dotfiles/.config/suckless/dmenu
+make
+sudo make clean install
+
+# Gerenciador de arquivos
+sudo apt install thunar ranger thunar-archive-plugin thunar-media-tags-plugin
+
+# Som
+sudo apt install pipewire pipewire-pulse wireplumber pipewire-media-session pulsemixer
+systemctl --user --now enable wireplumber.service
+
+# Music - MPD inicio pelo systemctl para o usuario
+sudo apt install playerctl mpd ncmpcpp mpc
+sudo systemctl disable mpd
+sudo systemctl stop  mpd
+systemctl --user enable mpd --now
+
+# Video
+sudo apt install mpv ytfzf
+
+# Brilho tela
+sudo apt install brightnessctl redshift
+cp .config/systemd/user_gerados/redshift.service .config/systemd/user/
+systemctl --user enable redshift.service --now
+
+# Bateria
+sudo apt install xfce3-power-manager tlp
+sudo systemctl disable powertop  # se o powertop estiver instalado, primeiro pare ele e depois desinstale
+sudo systemctl enable --now tlp
+cp .config/systemd/user_gerados/xfce4-power-manager.service .config/systemd/user/
+systemctl --user enable xfce4-power-manager.service --now
+
+# IDE
+sudo apt install emacs-gtk geany
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+~/.config/emacs/bin/doom install  # Cuidado para nao sobreescrever os arquivos do dotfiles
+
+# Aparencia
+sudo apt install numix-icon-theme-circle papirus-icon-theme lxappearance
+
+# Stype Programas qt
+sudo apt install qt5ct qt5-style-plugins
+
+# Pass, qtpass, pinentry e askpass
+sudo apt install pass qtpass pinentry-gnome3 ssh-askpass-gnome
+
+# O resto dos programas
+sudo apt install feh rofi network-manager xautolock picom dunst xdotool copyq solaar blueman flameshot btop qalculate-gtk libnotify-bin gpicview fonts-bebas-neue yt-dlp gpm aria2
+
+# Suporte para extracao de arquivos
+sudo apt install arc arj cabextract lhasa p7zip p7zip-full p7zip-rar rar unrar unace unzip xz-utils zip
+
+# Fontes microsoft
+sudo apt install cabextract curl fontconfig xfonts-utils
+sudo apt install ttf-mscorefonts-installer
+
+# Office
+sudo apt install libreoffice-gtk3 libreoffice-l10n-pt-br libreoffice atril xournalpp
+
+# Google-chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+
+# AppImage - fonte https://docs.appimage.org/user-guide/troubleshooting/fuse.html#setting-up-fuse-2-x-on-ubuntu-pre-22-04-debian-and-their-derivatives
+sudo apt-get install fuse libfuse2
+sudo modprobe -v fuse
+sudo addgroup fuse
+sudo adduser $USER fuse
+
+# Rlang
+sudo apt install r-base r-base-dev
+
+# VPN Wireguard
+sudo apt install wireguard resolvconf
+# https://serverspace.io/support/help/how-to-install-wireguard-vpn-client-on-ubuntu-linux/
+
+# Jogos
+flatpak install com.valvesoftware.Steam com.valvesoftware.Steam.Utility.MangoHud com.valvesoftware.Steam.Utility.vkBasalt com.valvesoftware.Steam.VulkanLayer.MangoHud com.heroicgameslauncher.hgl

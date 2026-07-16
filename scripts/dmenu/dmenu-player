@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+
+# Carrega o tema e o player selecionado
+source ~/.theme_selected
+PLAYER_CACHE=~/.cache/playerctl_selecionado
+
+# Garante que o cache do player existe
+if [[ ! -f $PLAYER_CACHE ]]; then
+    echo "PLAYER_SELECIONADO=" > "$PLAYER_CACHE"
+fi
+source "$PLAYER_CACHE"
+
+# Funcao para mostrar atualizacoes
+function fnotify(){
+    # Diretórios e configuraçõe
+    source ~/.cache/playerctl_selecionado
+    music_dir="$HOME/Músicas"
+    previewdir="$HOME/.cache/playerctl/previews"
+    mkdir -p "$previewdir"
+
+    # Obtém informações da música atual usando playerctl
+    title="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{title}}')"
+    artist="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{artist}}')"
+    album="$(playerctl --player=$PLAYER_SELECIONADO metadata --format '{{album}}')"
+    cover_url="$(playerctl  --player=$PLAYER_SELECIONADO metadata --format '{{mpris:artUrl}}')"
+
+    # Nome do arquivo da prévia baseado no nome do álbum (codificado em base64)
+    previewname="$previewdir/$(echo "$title$artist$album" | sed -e 's/[^a-z -]//ig' | base64).png"
+
+    # Faz o download da imagem do álbum, se ela ainda não existir
+    if [ ! -e "$previewname" ] && [ -n "$cover_url" ]; then
+        # Transforma URL do MPRIS para o formato acessível
+        if echo "$cover_url" | grep -q '^file://'; then
+            cover_path="${cover_url#file://}"
+            cp "$cover_path" "$previewname"
+        else
+            curl -sL "$cover_url" -o "$previewname"
+        fi
+
+        # Ajusta o tamanho da imagem
+        [ -e "$previewname" ] && magick "$previewname" -resize 512x512 "$previewname"
+    fi
+
+    # Envia notificação
+    notify-send -r 27072 "Now Playing" "$title\n$artist - $album" -i "$previewname"
+}
+
+
+# Função para exibir informações dos players com `dmenu`
+function select_player_with_dmenu() {
+    # Obtém a lista de players ativos
+    players=( $(playerctl -l) )
+    if [[ ${#players[@]} -eq 0 ]]; then
+        notify-send "Players" "Nenhum player ativo encontrado."
+        exit 1
+    fi
+
+    # Monta a lista para o `dmenu` com informações de reprodução
+    options=()
+    for player in "${players[@]}"; do
+        title="$(playerctl --player=$player metadata --format '{{title}}' 2>/dev/null || echo "Desconhecido")"
+        artist="$(playerctl --player=$player metadata --format '{{artist}}' 2>/dev/null || echo "Desconhecido")"
+        status="$(playerctl --player=$player status 2>/dev/null || echo "Desconhecido")"
+
+    if [ "$title" = "" ]; then
+        title=$(playerctl $PLAYERS metadata xesam:url | sed 's/file:\/\///' | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))" | xargs -I {} basename "{}")
+    fi
+
+        case "$player" in
+            "chromium.instance2")
+                icon_player=""
+                player="FreeTube"
+            ;;
+
+            "mpd")
+                icon_player=""
+            ;;
+
+            "mpv")
+                icon_player=""
+                ;;
+
+            "vlc")
+                icon_player="󰕼"
+                ;;
+
+            "spotube.instance2")
+                icon_player=""
+                ;;
+
+            "spotify")
+                icon_player=""
+                ;;
+            *)
+                icon_player=""
+            ;;
+        esac
+
+        if [ $status != "Stopped" ]; then
+            options+=("$icon_player $player | $status | $title - $artist")
+        fi
+    done
+
+    # Exibe o menu para o usuário selecionar
+    selected=$(printf "%s\n" "${options[@]}" | dmenu -p "Selecione um player:")
+    if [[ -n "$selected" ]]; then
+        # Extrai o nome do player selecionado
+        PLAYER_SELECIONADO=$(echo "$selected" | awk -F " | " '{print $2}')
+
+        if [ $PLAYER_SELECIONADO = "FreeTube" ]; then
+            PLAYER_SELECIONADO="chromium.instance2"
+        fi
+
+        if [ $PLAYER_SELECIONADO = "Spotube" ]; then
+            PLAYER_SELECIONADO="spotube.instance2"
+        fi
+
+        echo "PLAYER_SELECIONADO=$PLAYER_SELECIONADO" > "$PLAYER_CACHE"
+        status_playing=$(playerctl --player=$PLAYER_SELECIONADO status)
+        # pausa os outros players
+
+        playerctl --all-players pause
+        playerctl --player=$PLAYER_SELECIONADO play-pause
+
+        # notifica
+        fnotify
+    else
+        exit 0
+    fi
+}
+
+select_player_with_dmenu
