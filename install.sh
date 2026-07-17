@@ -262,7 +262,7 @@ fi
 
 
 # Create folders
-mkdir -p ~/[.fonts, .icons, .themes, .local/share/sounds. .local/bin/scripts, .local/src, .wallpapers]
+mkdir -p ~/.fonts ~/.icons ~/.themes ~/.local/share/sounds ~/.local/bin/scripts ~/.local/src ~/.wallpapers
 
 # Create Symlinks of configs
 msg "Stow configuration..."
