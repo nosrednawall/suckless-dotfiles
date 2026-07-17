@@ -266,6 +266,7 @@ mkdir -p ~/.fonts ~/.icons ~/.themes ~/.local/share/sounds ~/.local/bin/scripts 
 
 # Create Symlinks of configs
 msg "Stow configuration..."
+mv ~/.bashrc ~/.bashrc_original
 stow -d "$CONFIG_DIR/config" -t "$HOME/.config" .
 stow -d "$CONFIG_DIR/fonts" -t "$HOME/.fonts" .
 stow -d "$CONFIG_DIR/home" -t "$HOME" .
