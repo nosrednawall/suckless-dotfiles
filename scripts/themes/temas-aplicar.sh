@@ -623,7 +623,7 @@ select_wallpaper() {
     fi
 
     # Usa o sxiv para selecionar wallpapers e salva a seleção no arquivo temporário
-    walls=$(sxiv -t -o -r -g 1800x650 "$DIR" | xargs)
+    walls=$(nsxiv -t -o -r -g 1800x650 "$DIR" | xargs)
 
     # Verifica se alguma imagem foi selecionada
     if [ -z "$walls" ]; then
