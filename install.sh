@@ -31,7 +31,7 @@ done
 
 # Paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="$HOME/.config/suckless-dotfiles"
+CONFIG_DIR="$HOME/.config/suckless"
 TEMP_DIR="/tmp/dwm_$$"
 LOG_FILE="$HOME/dwm-install.log"
 
@@ -127,10 +127,6 @@ PACKAGES_TERMINAL=(
 PACKAGES_SYSTEM=(
     ly avahi flatpak
 )
-
-#PACKAGES_DOCKER=(
-#    docker docker-compose
-#)
 
 PACKAGES_DESKTOP_ENVIROMENT=(
     polkit lxsession xsettingsd xdg-user-dirs xdg-user-dirs-gtk
@@ -229,9 +225,6 @@ if [ "$ONLY_CONFIG" = false ]; then
     msg "Installing security components..."
     sudo pacman -S --noconfirm "${PACKAGES_SECURITY[@]}" || die "Failed to install Security packages"
 
-    #msg "Installing docker support..."
-    #sudo pacman -S --noconfirm "${PACKAGES_DOCKER[@]}" || die "Failed to install docker packages"
-
     msg "Installing office support..."
     sudo pacman -S --noconfirm "${PACKAGES_OFFICE[@]}" || die "Failed to install office packages"
 
@@ -252,7 +245,8 @@ if [ "$ONLY_CONFIG" = false ]; then
     sudo pacman -S --noconfirm "${PACKAGES_DEPENDENCIES_WALRS[@]}" || die "Failed to install walrs build tools"
 
     # Enable services
-    sudo systemctl enable avahi-daemon acpid NetworkManager bluetooth wireplumber
+    sudo systemctl enable avahi-daemon acpid NetworkManager bluetooth
+    sudo systemctl enable ly@tty2.service
 
     # Disable system mpd service and enable user mpd service
     sudo systemctl disable mpd
@@ -283,6 +277,9 @@ if [ -d "$CONFIG_DIR" ]; then
     fi
 fi
 
+# Create folders
+mkdir -p ~/[.fonts, .icons, .themes, .local/share/sounds. .local/bin/scripts, .local/src, .wallpapers]
+
 # Create Symlinks of configs
 msg "Stow configuration..."
 stow -d "$CONFIG_DIR/config" -t "$HOME/.config" .
@@ -297,7 +294,7 @@ stow -d "$CONFIG_DIR/wallpapers" -t "$HOME/.wallpapers" .
 
 # Build suckless tools
 msg "Building suckless tools..."
-for tool in dwm dmenu dwmblocks-async nsxiv potato-c slock st warls; do
+for tool in dwm dmenu dwmblocks-async nsxiv potato-c slock st walrs; do
     cd "$CONFIG_DIR/src/$tool" || die "Cannot find $tool"
     make && sudo make install || die "Failed to build $tool"
 done
@@ -335,7 +332,7 @@ EOF
 
     # create folder with wallpapers slock
     sudo mkdir -p /usr/share/images/desktop-base/wallpapers-slock
-    sudo cp -R "$CONFIG_DIR/src/slock/wallpapers-slock/*" /usr/share/images/desktop-base/wallpapers-slock/
+    sudo cp -R "$CONFIG_DIR/src/slock/wallpapers-slock/" /usr/share/images/desktop-base/wallpapers-slock/
 
 else
     msg "Skipping desktop entry creation (--only-config mode)"
@@ -609,6 +606,13 @@ slock.capslock: #ca9ee6
 slock.blocks  : #a6e3a1
 slock.bg_image: /usr/share/images/desktop-base/CatppuccinMocha-Planets.png
 
+EOF
+
+
+# Primeiro Wallpaper
+cat > ~/.fehbg <<EOF
+#!/bin/sh
+feh --no-fehbg --bg-fill '/home/anderson/.wallpapers/Catppuccin/Dark/CatppuccinMocha-Saturn.png'
 EOF
 
 # install gtk themes
