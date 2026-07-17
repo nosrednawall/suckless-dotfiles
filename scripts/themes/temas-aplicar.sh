@@ -8,6 +8,7 @@
 CONFIG_FILE="$HOME/.config/suckless/scripts/themes/temas.conf"
 XRESOURCES_FILE="$HOME/.Xresources"
 LOG_FILE="/tmp/temas-aplicar-debug.log"
+ROFI_COLORS_RASI="$HOME/.config/suckless/config/rofi/shared/colors.rasi"
 
 # Função de debug
 debug_log() {
@@ -193,7 +194,15 @@ load_theme() {
    dmenu_hlbackground=$(get_theme_value "$theme_name" "dmenu_hlbackground")
    dmenu_hlforeground=$(get_theme_value "$theme_name" "dmenu_hlforeground")
 
-    debug_log "✅ Tema carregado: $THEME_MODE $COLOR_MODE"
+   # Rofi
+   rofi_background="$COLOR_BACKGROUND"
+   rofi_background_alt="$COLOR_BACKGROUND"
+   rofi_foreground="$COLOR_TEXT"
+   rofi_selected="$selbgcolor"
+   rofi_active="$selbgcolor"
+   rofi_urgent="$selbgcolor"
+
+   debug_log "✅ Tema carregado: $THEME_MODE $COLOR_MODE"
 }
 
 # Função para aplicar tema pywal
@@ -342,6 +351,15 @@ apply_pywal() {
    dmenu_selhlforeground="$COLOR_TEXT"
    dmenu_hlbackground="$COLOR_BACKGROUND"
    dmenu_hlforeground="$COLOR_TEXT"
+
+   # Rofi
+   rofi_background="$COLOR_BACKGROUND"
+   rofi_background_alt="$COLOR_BACKGROUND"
+   rofi_foreground="$COLOR_TEXT"
+   rofi_selected="$selbgcolor"
+   rofi_active="$selbgcolor"
+   rofi_urgent="$selbgcolor"
+
 
     debug_log "✅ Pywal aplicado"
 }
@@ -549,6 +567,25 @@ COLOR_13="$COLOR_13"
 COLOR_14="$COLOR_14"
 COLOR_15="$COLOR_15"
 COLOR_16="$COLOR_16"
+
+EOF
+
+cat > "$ROFI_COLORS_RASI" <<EOF
+/**
+ *
+ *
+ * Colors
+ **/
+
+* {
+    background:     $rofi_background;
+    background-alt: $rofi_background_alt;
+    foreground:     $rofi_foreground;
+    selected:       $rofi_selected;
+    active:         $rofi_active;
+    urgent:         $rofi_urgent;
+}
+
 
 EOF
     check_error "Falha ao gerar .theme_selected" $LINENO

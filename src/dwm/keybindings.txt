@@ -6,16 +6,16 @@
 # sxhkd-launched apps live in sxhkd/sxhkdrc; this file is dwm-internal only.
 
 # === LAUNCH ===
-Super + Return	!Terminal (kitty)
-Super + p	dmenu_run
+Super + Return !Terminal (kitty)
+Super + p dmenu_run
 
 # === WINDOW ===
-Super + q	!Close focused window
-Super + j	Focus next window
-Super + k	Focus previous window
-Super + Left	Focus previous window
-Super + Right	Focus next window
-Super + Shift + j	Move window down in stack
+Super + q	            !Close focused window
+Super + j	            Focus next window
+Super + k	            Focus previous window
+Super + Left	        Focus previous window
+Super + Right	        Focus next window
+Super + Shift + j	    Move window down in stack
 Super + Shift + k	Move window up in stack
 Super + Shift + Left	Move window up in stack
 Super + Shift + Right	Move window down in stack

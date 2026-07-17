@@ -27,7 +27,7 @@ static const int smartgaps_fact          = 3;   /* gap factor when there is only
 static const char autostartblocksh[]     = "autostart_blocking.sh";
 static const char autostartsh[]          = "autostart.sh";
 static const char dwmdir[]               = "dwm";
-static const char localshare[]           = ".local/share";
+static const char localshare[]           = ".local/src";
 static const int showbar                 = 1;   /* 0 means no bar */
 static const int topbar                  = 1;   /* 0 means bottom bar */
 static const int bar_height              = 0;   /* 0 means derive from font, >= 1 explicit height */
@@ -175,6 +175,7 @@ static const Rule rules[] = {
 	// Floating windows
 	RULE(.class = "copyq", .tags = 0, .isfloating = 1)
 	RULE(.class = "Sxiv", .tags = 0, .isfloating = 1)
+  RULE(.class = "Nsxiv", .tags = 0, .isfloating = 1)
 	RULE(.class = "Qalculate-gtk", .tags = 0, .isfloating = 1)
 	RULE(.class = "kruler", .tags = 0, .isfloating = 1)
 
@@ -399,7 +400,6 @@ static const Key keys[] = {
 
   /* ===== TOGGLE FLOATING E SPACE ===== */
 	{ MODKEY|ShiftMask,             XK_space,      togglefloating,         {0} },
-  { MODKEY,                       XK_space,      setlayout,              {0} },
 
 	/* ===== SCRATCHPADS ===== */
 	{ MODKEY,                       XK_grave,      togglescratch,          {.ui = 0 } },
@@ -471,7 +471,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,	          XK_c,          spawn,                 SHCMD(PATH("dmenu/dmenu-docker")) },
 	{ MODKEY|ShiftMask,	          XK_b,          spawn,                 SHCMD(PATH("dmenu/dmenu-bookmark")) },
 
-	/* ===== LANÇAMENTO PROGRAMAS ===== */
+  /* ===== ROFIS ====  */
+  { MODKEY,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help")) },
+
+  /* ===== LANÇAMENTO PROGRAMAS ===== */
 	{ MODKEY,						XK_w,		   spawn,			       SHCMD("firefox") },
 	{ MODKEY,						XK_e,		   spawn,			       SHCMD("emacs" ) },
 	{ MODKEY,						XK_f,		   spawn,			       SHCMD("thunar" ) },
