@@ -260,22 +260,6 @@ else
     msg "Skipping package installation (--only-config mode)"
 fi
 
-# Handle existing config
-if [ -d "$CONFIG_DIR" ]; then
-    clear
-    read -p "Found existing suckless config. Backup? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        mv "$CONFIG_DIR" "$CONFIG_DIR.bak.$(date +%s)"
-        msg "Backed up existing config"
-    else
-        clear
-        read -p "Overwrite without backup? (y/n) " -n 1 -r
-        echo
-        [[ $REPLY =~ ^[Yy]$ ]] || die "Installation cancelled"
-        rm -rf "$CONFIG_DIR"
-    fi
-fi
 
 # Create folders
 mkdir -p ~/[.fonts, .icons, .themes, .local/share/sounds. .local/bin/scripts, .local/src, .wallpapers]
