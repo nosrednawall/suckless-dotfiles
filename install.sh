@@ -611,3 +611,6 @@ tar -xvzf icons.tar.gz
 # Setup directories
 xdg-user-dirs-update
 mkdir -p ~/Imagens/Screenshoots
+
+# Setup xdg-mime applications
+xdg-settings set default-web-browser firefox.desktop
