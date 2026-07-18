@@ -456,8 +456,6 @@ static const Key keys[] = {
 	/* ===== BRILHO TELA ===== */
 	{ 0,							              XF86XK_MonBrightnessUp,		spawn,   SHCMD(PATH("dwm/dwm-brilho-tela-aumenta")) },
 	{ 0,							              XF86XK_MonBrightnessDown,	spawn,   SHCMD(PATH("dwm/dwm-brilho-tela-diminui")) },
-	{ MODKEY,						          XF86XK_MonBrightnessDown,	spawn,   SHCMD(PATH("dwm/dwm-redshift-aumenta")) },
-	{ MODKEY,						          XF86XK_MonBrightnessUp,		spawn,   SHCMD(PATH("dwm/dwm-redshift-diminui")) },
 
 	/* ===== DMENUS ===== */
 	{ MODKEY|ShiftMask,             XK_e,          spawn,                 SHCMD(PATH("dmenu/dmenu-saida-sistema" )) },
