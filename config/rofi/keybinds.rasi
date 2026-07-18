@@ -32,12 +32,13 @@ element {
     padding: 4 8;
     text-color: @fg;
     background-color: @bg;
-    border-radius: 5px;
+    border-radius: 0px;
 }
 
 element.selected {
     text-color: @fg;
     background-color: @accent;
+    padding: 4 8;
 }
 
 element-text {

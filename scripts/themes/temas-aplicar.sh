@@ -15,6 +15,7 @@ debug_log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
+
 # Função para verificar erro e parar
 check_error() {
     if [ $? -ne 0 ]; then
@@ -194,14 +195,6 @@ load_theme() {
    dmenu_hlbackground=$(get_theme_value "$theme_name" "dmenu_hlbackground")
    dmenu_hlforeground=$(get_theme_value "$theme_name" "dmenu_hlforeground")
 
-   # Rofi
-   rofi_background="$COLOR_BACKGROUND"
-   rofi_background_alt="$COLOR_BACKGROUND"
-   rofi_foreground="$COLOR_TEXT"
-   rofi_selected="$selbgcolor"
-   rofi_active="$selbgcolor"
-   rofi_urgent="$selbgcolor"
-
    debug_log "✅ Tema carregado: $THEME_MODE $COLOR_MODE"
 }
 
@@ -351,14 +344,6 @@ apply_pywal() {
    dmenu_selhlforeground="$COLOR_TEXT"
    dmenu_hlbackground="$COLOR_BACKGROUND"
    dmenu_hlforeground="$COLOR_TEXT"
-
-   # Rofi
-   rofi_background="$COLOR_BACKGROUND"
-   rofi_background_alt="$COLOR_BACKGROUND"
-   rofi_foreground="$COLOR_TEXT"
-   rofi_selected="$selbgcolor"
-   rofi_active="$selbgcolor"
-   rofi_urgent="$selbgcolor"
 
 
     debug_log "✅ Pywal aplicado"
@@ -579,17 +564,17 @@ cat > "$ROFI_COLORS_RASI" <<EOF
 * {
     font:   "Montserrat 12";
 
-    bg0:    #242424 E6;
-    bg1:    #7E7E7E 80;
-    bg2:    #0860f2 E6;
+    bg0:    ${normbgcolor}E6;
+    bg1:    ${titlenormbgcolor}80;
+    bg2:    ${tagsselbgcolor}E6;
 
-    fg0:    #DEDEDE;
-    fg1:    #FFFFFF;
-    fg2:    #DEDEDE 80;
+    fg0:    $normfgcolor;
+    fg1:    $titlenormfgcolor;
+    fg2:    ${tagsselfgcolor}80;
 
-    background-color:   #242424 E6;
+    background-color:   ${normbgcolor}E6;
     text-color:         @fg0;
-
+    accent: ${selbordercolor}20;
     margin:     0;
     padding:    0;
     spacing:    0;

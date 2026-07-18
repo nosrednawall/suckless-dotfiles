@@ -1,19 +1,24 @@
+/**
+ * Colors
+ **/
+
 
 * {
     font:   "Montserrat 12";
 
-    bg0:    #242424E6;
-    bg1:    #7E7E7E80;
-    accent:    #0860f2E6;
+    bg0:    #002b36E6;
+    bg1:    #002b3680;
+    bg2:    #073642E6;
 
-    fg0:    #DEDEDE;
-    fg1:    #FFFFFF;
-    fg2:    #DEDEDE80;
+    fg0:    #268bd2;
+    fg1:    #839496;
+    fg2:    #eee8d580;
 
-    background-color:   #242424;
+    background-color:   #002b36E6;
     text-color:         @fg0;
-
+    accent: #85990020;
     margin:     0;
     padding:    0;
     spacing:    0;
 }
+
