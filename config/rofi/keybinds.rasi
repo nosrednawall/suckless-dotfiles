@@ -1,3 +1,6 @@
+/* MACOS SPOTLIGHT LIKE DARK THEME FOR ROFI  */
+/* Author: Newman Sanchez (https://github.com/newmanls) */
+
 @import "colors.rasi"
 
 * {
@@ -13,7 +16,6 @@ configuration {
 
 window {
     width: 45%;
-    transparency: "real";
     orientation: vertical;
     border-color: @accent;
     border-radius: 10px;

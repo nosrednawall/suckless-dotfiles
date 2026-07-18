@@ -8,7 +8,7 @@
 CONFIG_FILE="$HOME/.config/suckless/scripts/themes/temas.conf"
 XRESOURCES_FILE="$HOME/.Xresources"
 LOG_FILE="/tmp/temas-aplicar-debug.log"
-ROFI_COLORS_RASI="$HOME/.config/suckless/config/rofi/shared/colors.rasi"
+ROFI_COLORS_RASI="$HOME/.config/suckless/config/rofi/colors.rasi"
 
 # Função de debug
 debug_log() {
@@ -572,20 +572,28 @@ EOF
 
 cat > "$ROFI_COLORS_RASI" <<EOF
 /**
- *
- *
  * Colors
  **/
 
-* {
-    background:     $rofi_background;
-    background-alt: $rofi_background_alt;
-    foreground:     $rofi_foreground;
-    selected:       $rofi_selected;
-    active:         $rofi_active;
-    urgent:         $rofi_urgent;
-}
 
+* {
+    font:   "Montserrat 12";
+
+    bg0:    #242424 E6;
+    bg1:    #7E7E7E 80;
+    bg2:    #0860f2 E6;
+
+    fg0:    #DEDEDE;
+    fg1:    #FFFFFF;
+    fg2:    #DEDEDE 80;
+
+    background-color:   #242424 E6;
+    text-color:         @fg0;
+
+    margin:     0;
+    padding:    0;
+    spacing:    0;
+}
 
 EOF
     check_error "Falha ao gerar .theme_selected" $LINENO
