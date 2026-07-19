@@ -470,8 +470,9 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,	          XK_b,          spawn,                 SHCMD(PATH("dmenu/dmenu-bookmark")) },
 
   /* ===== ROFIS ====  */
-  { MODKEY,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-dwm")) },
-  { MODKEY|ControlMask,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-mouse")) },
+  { MODKEY,          	          XK_space,      spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-dwm")) },
+  { MODKEY|ControlMask,           XK_space,      spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-mouse")) },
+  { MODKEY|Mod1Mask,              XK_space,      spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-emacs")) },
   /* ===== LANÇAMENTO PROGRAMAS ===== */
 	{ MODKEY,						XK_w,		   spawn,			       SHCMD("firefox") },
 	{ MODKEY,						XK_e,		   spawn,			       SHCMD("emacs" ) },

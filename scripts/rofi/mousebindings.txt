@@ -1,0 +1,33 @@
+# === Icon   ===
+ClickLeft                         	!Launch Programs (Rofi)
+ClickRight                        	Launch Timeshift
+
+# === Icon Layouts ex.: []=  ===
+ClickLeft                       	!Dmenu Layout Selector
+ClickRight                      	Change layout  []= tile
+mouse scroll wheel              	Cicle Layout
+
+# === Tags Names 1...9  ===
+ClickLeft                      	!Change tags
+ClickRight                     	Stick tags
+Super + ClickLeft              	Move selected windo for tag, and change view
+Super + ClickRight             	Move selected windo for tag, and not change view
+mouse scroll up                	Change tags for right
+mouse scroll down              	Change tags for left
+
+# === Prograns Titles ===
+ClickLeft              	!Toggle hide/unhide program
+ClickRight             	Toggle hide/unhide program
+Shift + ClickRight     	Unhide all programs
+ClickMiddle            	Toggle zoom master
+
+# === Programs Windows ===
+Super + ClickLeft                   	!Move or place window
+Super + ClickMiddle                 	Toggle Floating
+Super + ClickRight                  	Resize app window
+Super + mouse scroll up             	Resize app window up, if floating
+Super + mouse scroll down           	Resize app window down, if floating
+Super + Shift + mouse scroll up     	Resize app window Right, if floating
+Super + Shift + mouse scroll down   	Resize app window Left, if floating
+Super + Shift + ClickLeft           	Resize app window Vertical
+Super + Shift + ClickRight          	Resize app window Horizontal

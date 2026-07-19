@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KEYSTXT="$HOME/.config/suckless/src/dwm/keybindings.txt"
+KEYSTXT="$HOME/.config/suckless/scripts/rofi/keybindings.txt"
 THEME="$HOME/.config/suckless/config/rofi/keybinds.rasi"
 
 # Pin syntax: prefix the description with "!" (and optional space) to render
@@ -94,5 +94,5 @@ rows=$(awk '
     }
 ' "$KEYSTXT")
 
-echo "$rows" | rofi -dmenu -markup-rows -i -p "Keybindings" \
+echo "$rows" | rofi -dmenu -markup-rows -i -p "Key Bindings" \
     -line-padding 4 -hide-scrollbar -theme "$THEME"

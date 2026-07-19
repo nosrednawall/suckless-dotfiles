@@ -1,1 +1,0 @@
-sudo pacman -S  libx11 libxcrypt libxext libxrandr libxinerama imlib2  libxcb libxft libxrender freetype2 xcb-proto libxcb libxau libxdmcp zlib libpng
