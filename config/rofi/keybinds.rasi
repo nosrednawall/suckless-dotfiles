@@ -33,25 +33,50 @@ element {
     text-color: @fg;
     background-color: @bg;
     border-radius: 0px;
+    border-color: @bg;
+    padding-color: @accent;
+    margin-color : @accent;
 }
 
 element.selected {
     text-color: @fg;
     background-color: @accent;
+    border-color: @accent;
     padding: 4 8;
+    padding-color: @accent;
+    margin-color : @accent;
 }
 
 element-text {
     background-color: inherit;
     text-color: inherit;
+
 }
 
 element-icon {
     size: 16 px;
     background-color: inherit;
+    
     padding: 0 6 0 0;
     alignment: vertical;
 }
+
+element-text.selected {
+    background-color: inherit;
+    text-color: inherit;
+    border-color: @accent;
+}
+
+element-icon.selected {
+    size: 16 px;
+    background-color: inherit;
+    border-color: @accent;
+    padding: 0 6 0 0;
+    alignment: vertical;
+}
+
+
+
 
 element.selected.active {
     background-color: @bg;
@@ -65,17 +90,23 @@ element.alternate.normal {
 
 element.alternate.active {
     background-color: @accent;
+    border-color: @accent;
+    padding-color: @accent;
     text-color: @fg;
 }
 
 element.selected.normal {
     background-color: @accent;
+    border-color: @accent;
+    padding-color: @accent;
     text-color: @bg;
 }
 
 element.normal.active {
     background-color: @bg;
     text-color: @fg;
+    border-color: @accent;
+    padding-color: @accent;
 }
 
 element.normal.normal {

@@ -85,10 +85,10 @@ rows=$(awk '
             if (pcnt[name] + cnt[name] == 0) continue
             printf "<span size=\"large\" weight=\"bold\" foreground=\"#ff8f40\">── %s ──</span>\n", xmlesc(name)
             for (j = 1; j <= pcnt[name]; j++) {
-                printf "<span foreground=\"#78a9ff\">%-35s</span>  %s\n", xmlesc(pkey[name, j]), xmlesc(pdsc[name, j])
+                printf "%-35s  %s\n", xmlesc(pkey[name, j]), xmlesc(pdsc[name, j])
             }
             for (j = 1; j <= cnt[name]; j++) {
-                printf "<span foreground=\"#78a9ff\">%-35s</span>  %s\n", xmlesc(rkey[name, j]), xmlesc(rdsc[name, j])
+                printf "%-35s  %s\n", xmlesc(rkey[name, j]), xmlesc(rdsc[name, j])
             }
         }
     }

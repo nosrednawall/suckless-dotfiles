@@ -46,6 +46,21 @@ element-icon {
     alignment: vertical;
 }
 
+element-text.selected {
+    background-color: inherit;
+    text-color: inherit;
+    border-color: @accent;
+}
+
+element-icon.selected {
+    size: 16 px;
+    background-color: inherit;
+    border-color: @accent;
+    padding: 0 6 0 0;
+    alignment: vertical;
+}
+
+
 element.selected.active {
     background-color: @bg;
     text-color: @fg;

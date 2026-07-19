@@ -1,32 +1,58 @@
 /**
  * Colors
  **/
-
+/**
+ * Gruvbox Dark Colors
+ * Para ser carregado via @import em themes
+ **/
 
 * {
-    font:   "Montserrat 12";
-
+    /* Cores base Gruvbox Dark */
     bg0:    #282828E6;
-    bg1:    #28282880;
-    bg2:    #3c3836E6;
+    bg1:    #3c3836;
+    bg2:    #504945;
+    bg3:    #665c54;
+    bg4:    #7c6f64;
 
-    fg0:    #458588;
+    fg0:    #fbf1c7;
     fg1:    #ebdbb2;
-    fg2:    #fbf1c780;
+    fg2:    #d5c4a1;
+    fg3:    #bdae93;
+    fg4:    #a89984;
 
-    background-color:   #282828E6;
-    text-color:         @fg0;
-    accent: #689d6a20;
+    red:    #cc241d;
+    green:  #98971a;
+    yellow: #d79921;
+    blue:   #458588;
+    purple: #b16286;
+    aqua:   #689d6a;
+    orange: #d65d0e;
+    gray:   #928374;
 
-    entry-fg:   @fg2;
-    prompt-fg:  @fg1;
+    /* Cores específicas para Rofi */
+    background-color:   @bg0;
+    text-color:         @fg1;
+    accent:             @aqua;
 
-    bg: @bg2;
-    fg: @fg2;
-    urgent: @fg2;
+    /* Elementos Rofi */
+    entry-fg:           @fg4;
+    prompt-fg:          @blue;
+    urgent:             @red;
 
-    margin:     0;
-    padding:    0;
-    spacing:    0;
+    bg:                 @bg0;
+    fg:                 @fg1;
+
+    /* Estilos adicionais */
+    selected-bg:        @blue;
+    selected-fg:        @bg0;
+    active-fg:          @green;
+    urgent-fg:          @red;
+
+    border-color:       @bg0;
+    border:             2px;
+    radius:             8px;
+
+    spacing:            0;
+    margin:             0;
+    padding:            0;
 }
-
