@@ -195,6 +195,25 @@ load_theme() {
    dmenu_hlbackground=$(get_theme_value "$theme_name" "dmenu_hlbackground")
    dmenu_hlforeground=$(get_theme_value "$theme_name" "dmenu_hlforeground")
 
+   rofi_bg0=$(get_theme_value "$theme_name" "rofi_bg0")
+   rofi_bg1=$(get_theme_value "$theme_name" "rofi_bg1")
+   rofi_bg2=$(get_theme_value "$theme_name" "rofi_bg2")
+   rofi_bg3=$(get_theme_value "$theme_name" "rofi_bg3")
+   rofi_bg4=$(get_theme_value "$theme_name" "rofi_bg4")
+   rofi_fg0=$(get_theme_value "$theme_name" "rofi_fg0")
+   rofi_fg1=$(get_theme_value "$theme_name" "rofi_fg1")
+   rofi_fg2=$(get_theme_value "$theme_name" "rofi_fg2")
+   rofi_fg3=$(get_theme_value "$theme_name" "rofi_fg3")
+   rofi_fg4=$(get_theme_value "$theme_name" "rofi_fg4")
+   rofi_red=$(get_theme_value "$theme_name" "rofi_red")
+   rofi_green=$(get_theme_value "$theme_name" "rofi_green")
+   rofi_yellow=$(get_theme_value "$theme_name" "rofi_yellow")
+   rofi_blue=$(get_theme_value "$theme_name" "rofi_blue")
+   rofi_purple=$(get_theme_value "$theme_name" "rofi_purple")
+   rofi_aqua=$(get_theme_value "$theme_name" "rofi_aqua")
+   rofi_orange=$(get_theme_value "$theme_name" "rofi_orange")
+   rofi_gray=$(get_theme_value "$theme_name" "rofi_gray")
+
    debug_log "✅ Tema carregado: $THEME_MODE $COLOR_MODE"
 }
 
@@ -301,7 +320,6 @@ apply_pywal() {
     ltsymbolfgcolor="$COLOR_14"
     ltsymbolbgcolor="$COLOR_BACKGROUND"
 
-
     # Símbolo do Layout
     slock_locked="$COLOR_BACKGROUND"
     slock_input="$COLOR_1"
@@ -310,41 +328,60 @@ apply_pywal() {
     slock_blocks="$COLOR_14"
 
     # st theme
-   ST_COLOR_0="$COLOR_1"
-   ST_COLOR_1="$COLOR_2"
-   ST_COLOR_2="$COLOR_3"
-   ST_COLOR_3="$COLOR_4"
-   ST_COLOR_4="$COLOR_5"
-   ST_COLOR_5="$COLOR_6"
-   ST_COLOR_6="$COLOR_7"
-   ST_COLOR_7="$COLOR_8"
-   ST_COLOR_8="$COLOR_9"
-   ST_COLOR_9="$COLOR_10"
-   ST_COLOR_10="$COLOR_11"
-   ST_COLOR_11="$COLOR_12"
-   ST_COLOR_12="$COLOR_13"
-   ST_COLOR_13="$COLOR_14"
-   ST_COLOR_14="$COLOR_15"
-   ST_COLOR_15="$COLOR_16"
+    ST_COLOR_0="$COLOR_1"
+    ST_COLOR_1="$COLOR_2"
+    ST_COLOR_2="$COLOR_3"
+    ST_COLOR_3="$COLOR_4"
+    ST_COLOR_4="$COLOR_5"
+    ST_COLOR_5="$COLOR_6"
+    ST_COLOR_6="$COLOR_7"
+    ST_COLOR_7="$COLOR_8"
+    ST_COLOR_8="$COLOR_9"
+    ST_COLOR_9="$COLOR_10"
+    ST_COLOR_10="$COLOR_11"
+    ST_COLOR_11="$COLOR_12"
+    ST_COLOR_12="$COLOR_13"
+    ST_COLOR_13="$COLOR_14"
+    ST_COLOR_14="$COLOR_15"
+    ST_COLOR_15="$COLOR_16"
 
-   ST_DEFAULTFG=257
-   ST_DEFAULTBG=0
-   ST_DEFAULTCS=258
-   ST_DEFAULTRCS=258
+    ST_DEFAULTFG=257
+    ST_DEFAULTBG=0
+    ST_DEFAULTCS=258
+    ST_DEFAULTRCS=258
 
-   # dmenu
-   dmenu_background="$COLOR_BACKGROUND"
-   dmenu_foreground="$COLOR_TEXT"
-   dmenu_selbackground="$COLOR_2"
-   dmenu_selforeground="$COLOR_TEXT"
-   dmenu_outbackground="$COLOR_7"
-   dmenu_outforeground="$COLOR_TEXT"
-   dmenu_bordercolor="$COLOR_BACKGROUND"
-   dmenu_selhlbackground="$COLOR_BACKGROUND"
-   dmenu_selhlforeground="$COLOR_TEXT"
-   dmenu_hlbackground="$COLOR_BACKGROUND"
-   dmenu_hlforeground="$COLOR_TEXT"
+    # dmenu
+    dmenu_background="$COLOR_BACKGROUND"
+    dmenu_foreground="$COLOR_TEXT"
+    dmenu_selbackground="$COLOR_2"
+    dmenu_selforeground="$COLOR_TEXT"
+    dmenu_outbackground="$COLOR_7"
+    dmenu_outforeground="$COLOR_TEXT"
+    dmenu_bordercolor="$COLOR_BACKGROUND"
+    dmenu_selhlbackground="$COLOR_BACKGROUND"
+    dmenu_selhlforeground="$COLOR_TEXT"
+    dmenu_hlbackground="$COLOR_BACKGROUND"
+    dmenu_hlforeground="$COLOR_TEXT"
 
+    # rofi
+    rofi_bg0=$COLOR_BACKGROUND
+    rofi_bg1=$COLOR_BACKGROUND
+    rofi_bg2=$COLOR_BACKGROUND
+    rofi_bg3=$COLOR_BACKGROUND
+    rofi_bg4=$COLOR_BACKGROUND
+    rofi_fg0=$COLOR_TEXT
+    rofi_fg1=$COLOR_TEXT
+    rofi_fg2=$COLOR_TEXT
+    rofi_fg3=$COLOR_TEXT
+    rofi_fg4=$COLOR_TEXT
+    rofi_red=$COLOR_1
+    rofi_green=$COLOR_2
+    rofi_yellow=$COLOR_3
+    rofi_blue=$COLOR_4
+    rofi_purple=$COLOR_5
+    rofi_aqua=$COLOR_6
+    rofi_orange=$COLOR_7
+    rofi_gray=$COLOR_8
 
     debug_log "✅ Pywal aplicado"
 }
@@ -557,37 +594,60 @@ EOF
 
 cat > "$ROFI_COLORS_RASI" <<EOF
 /**
- * Colors
+ *  $THEME_MODE $COLOR_MODE Colors
+ * Para ser carregado via @import em themes
  **/
 
-
 * {
-    font:   "Montserrat 12";
+    /* Cores base Gruvbox Light */
+    bg0:    $rofi_bg0;
+    bg1:    $rofi_bg1;
+    bg2:    $rofi_bg2;
+    bg3:    $rofi_bg3;
+    bg4:    $rofi_bg4;
 
-    bg0:    ${normbgcolor}E6;
-    bg1:    ${titlenormbgcolor}80;
-    bg2:    ${tagsselbgcolor}E6;
+    fg0:    $rofi_fg0;
+    fg1:    $rofi_fg1;
+    fg2:    $rofi_fg2;
+    fg3:    $rofi_fg3;
+    fg4:    $rofi_fg4;
 
-    fg0:    $normfgcolor;
-    fg1:    $titlenormfgcolor;
-    fg2:    ${tagsselfgcolor}80;
+    red:    $rofi_red;
+    green:  $rofi_green;
+    yellow: $rofi_yellow;
+    blue:   $rofi_blue;
+    purple: $rofi_purple;
+    aqua:   $rofi_aqua;
+    orange: $rofi_orange;
+    gray:   $rofi_gray;
 
-    background-color:   ${normbgcolor}E6;
-    text-color:         @fg0;
-    accent: ${selbordercolor}20;
+    /* Cores específicas para Rofi */
+    background-color:   @bg0;
+    text-color:         @fg1;
+    accent:             @blue;
 
-    entry-fg:   @fg2;
-    prompt-fg:  @fg1;
+    /* Elementos Rofi */
+    entry-fg:           @fg4;
+    prompt-fg:          @blue;
+    urgent:             @red;
 
-    bg: @bg2;
-    fg: @fg2;
-    urgent: @fg2;
+    bg:                 @bg0;
+    fg:                 @fg2;
 
-    margin:     0;
-    padding:    0;
-    spacing:    0;
+    /* Estilos adicionais */
+    selected-bg:        @blue;
+    selected-fg:        @bg0;
+    active-fg:          @green;
+    urgent-fg:          @red;
+
+    border-color:       @bg0;
+    border:             2px;
+    radius:             8px;
+
+    spacing:            0;
+    margin:             0;
+    padding:            0;
 }
-
 EOF
     check_error "Falha ao gerar .theme_selected" $LINENO
     debug_log "✅ .theme_selected gerado com sucesso - $THEME_ICON_DUNST"

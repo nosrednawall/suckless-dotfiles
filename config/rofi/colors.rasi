@@ -1,38 +1,35 @@
 /**
- * Colors
- **/
-/**
- * Gruvbox Dark Colors
+ *  Vaporwave Dark Colors
  * Para ser carregado via @import em themes
  **/
 
 * {
-    /* Cores base Gruvbox Dark */
-    bg0:    #282828E6;
-    bg1:    #3c3836;
-    bg2:    #504945;
-    bg3:    #665c54;
-    bg4:    #7c6f64;
+    /* Cores base Gruvbox Light */
+    bg0:    #0d0b1aE6;
+    bg1:    #1a1630;
+    bg2:    #2d1f4a;
+    bg3:    #4a2b6b;
+    bg4:    #6b3f8a;
 
-    fg0:    #fbf1c7;
-    fg1:    #ebdbb2;
-    fg2:    #d5c4a1;
-    fg3:    #bdae93;
-    fg4:    #a89984;
+    fg0:    #ff71ce;
+    fg1:    #ff85d4;
+    fg2:    #ff99da;
+    fg3:    #ffadc9;
+    fg4:    #ffc1c9;
 
-    red:    #cc241d;
-    green:  #98971a;
-    yellow: #d79921;
-    blue:   #458588;
-    purple: #b16286;
-    aqua:   #689d6a;
-    orange: #d65d0e;
-    gray:   #928374;
+    red:    #ff5555;
+    green:  #50fa7b;
+    yellow: #f1fa8c;
+    blue:   #01cdfe;
+    purple: #b967ff;
+    aqua:   #ff6bde;
+    orange: #ff9f1c;
+    gray:   #4a3b6b;
 
     /* Cores específicas para Rofi */
     background-color:   @bg0;
     text-color:         @fg1;
-    accent:             @aqua;
+    accent:             @blue;
 
     /* Elementos Rofi */
     entry-fg:           @fg4;
@@ -40,7 +37,7 @@
     urgent:             @red;
 
     bg:                 @bg0;
-    fg:                 @fg1;
+    fg:                 @fg2;
 
     /* Estilos adicionais */
     selected-bg:        @blue;
