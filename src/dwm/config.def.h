@@ -470,8 +470,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,	          XK_b,          spawn,                 SHCMD(PATH("dmenu/dmenu-bookmark")) },
 
   /* ===== ROFIS ====  */
-  { MODKEY,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help")) },
-
+  { MODKEY,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-dwm")) },
+  { MODKEY|ControlMask,          	          XK_space,          spawn,                 SHCMD(PATH("rofi/rofi-suckless-help-mouse")) },
   /* ===== LANÇAMENTO PROGRAMAS ===== */
 	{ MODKEY,						XK_w,		   spawn,			       SHCMD("firefox") },
 	{ MODKEY,						XK_e,		   spawn,			       SHCMD("emacs" ) },
@@ -541,8 +541,8 @@ static const Button buttons[] = {
 	{ ClkClientWin,         MODKEY,              Button3,        resizemouse,          {0} },
 	{ ClkClientWin,         MODKEY,              Button4,        resizemousescroll,    {.v = &scrollargs[0]} },
 	{ ClkClientWin,         MODKEY,              Button5,        resizemousescroll,    {.v = &scrollargs[1]} },
-	{ ClkClientWin,         MODKEY,              Button6,        resizemousescroll,    {.v = &scrollargs[2]} },
-	{ ClkClientWin,         MODKEY,              Button7,        resizemousescroll,    {.v = &scrollargs[3]} },
+	{ ClkClientWin,         MODKEY|ShiftMask,    Button4,        resizemousescroll,    {.v = &scrollargs[2]} },
+	{ ClkClientWin,         MODKEY|ShiftMask,    Button5,        resizemousescroll,    {.v = &scrollargs[3]} },
 	{ ClkClientWin,         MODKEY|ShiftMask,    Button3,        dragcfact,            {0} },
 	{ ClkClientWin,         MODKEY|ShiftMask,    Button1,        dragmfact,            {0} },
 	{ ClkTagBar,            0,                   Button1,        view,                 {0} },

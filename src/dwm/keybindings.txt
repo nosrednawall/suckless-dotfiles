@@ -7,9 +7,7 @@
 
 # === HELP ===
 Super + space            	!Rofi help dwm
-Super + Alt + space      	Rofi help emacs
-Super + Shift + space    	Rofi help st
-
+Super + Shift + space    	Rofi help mouse dwm
 
 # === LAUNCH ===
 Super + Shift + Return	!Terminal (st)
@@ -18,6 +16,7 @@ Super + d	            Launch Programs (Rofi)
 Super + w	            Launch Web Browser (Firefox)
 Super + e	            Launch Emacs
 Super + f	            Launch Thunar
+Super + v	            Launch Copyq
 Super + Shift + d	    Launch Scripts Dmenu
 
 
@@ -148,15 +147,3 @@ XF86XK_MonBrightnessDown   	Down brightness monitor by 5
 Print               	!Print with select area
 Super + Shift + s   	Print with select area
 
-# === Mouse ===
-ClickLeft  +                       	!Launch Programs (Rofi)
-ClickRight +                       	Launch Timeshift
-ClickLeft  + []=                     	Dmenu Layout Selector
-ClickRight + []=                     	Change layout  []= tile
-mouse scroll wheel + []=             	Cicle Layout
-ClickLeft  + 1..9                    	Change tags
-ClickRight + 1..9                    	Stick tags
-ClickLeft  + ProgramTitle            	Toggle hide/unhide program
-ClickRight + ProgramTitle            	Toggle hide/unhide program
-Shift + ClickRight + ProgramTitle    	Unhide all programs
-ClickMouseScroll + ProgramTitle      	Toggle zoom master

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+KEYSTXT="$HOME/.config/suckless/src/dwm/mousebindings.txt"
+THEME="$HOME/.config/suckless/config/rofi/keybinds.rasi"
+
+# Pin syntax: prefix the description with "!" (and optional space) to render
+# the entry at the top of its section, regardless of source file order.
+#   keybindings.txt:  Super + space<TAB>!Launch rofi
+#   sxhkdrc:          # !Launch rofi  (above the binding line)
+
+rows=$(awk '
+    function xmlesc(s) {
+        gsub(/&/, "\\&amp;", s)
+        gsub(/</, "\\&lt;", s)
+        return s
+    }
+
+    function strip_pin(desc,    pinned) {
+        pinned = 0
+        if (substr(desc, 1, 1) == "!") {
+            pinned = 1
+            desc = substr(desc, 2)
+            sub(/^[[:space:]]+/, "", desc)
+        }
+        _pin = pinned
+        _desc = desc
+        return pinned
+    }
+
+    function add(section, key, desc,    p) {
+        p = strip_pin(desc)
+        desc = _desc
+        if (p) {
+            pcnt[section]++
+            pkey[section, pcnt[section]] = key
+            pdsc[section, pcnt[section]] = desc
+        } else {
+            cnt[section]++
+            rkey[section, cnt[section]] = key
+            rdsc[section, cnt[section]] = desc
+        }
+    }
+
+    # Reset state when starting the second file
+    FNR == 1 && NR != 1 { current = ""; last = "" }
+
+    # Section marker (both files)
+    /^#[[:space:]]*===[[:space:]]+.+[[:space:]]+===[[:space:]]*$/ {
+        s = $0
+        sub(/^#[[:space:]]*===[[:space:]]+/, "", s)
+        sub(/[[:space:]]+===[[:space:]]*$/, "", s)
+        if (!(s in seen)) { order[++n] = s; seen[s] = 1 }
+        current = s
+        last = ""
+        next
+    }
+
+    # First file: keybindings.txt (tab-separated key<TAB>desc)
+    FNR == NR {
+        if ($0 !~ /^#/ && $0 !~ /^[[:space:]]*$/) {
+            i = index($0, "\t")
+            if (i > 0 && current != "") {
+                key  = substr($0, 1, i - 1)
+                desc = substr($0, i + 1)
+                gsub(/[[:space:]]+$/, "", key)
+                gsub(/^[[:space:]]+/, "", desc)
+                if (key != "" && desc != "") add(current, key, desc)
+            }
+        }
+        next
+    }
+
+    # Second file: sxhkdrc (# desc followed by key line)
+    /^#/ { last = substr($0, 3); next }
+    /^[A-Za-z]/ && last && current != "" {
+        add(current, $0, last)
+        last = ""
+        next
+    }
+    { last = "" }
+
+    END {
+        for (i = 1; i <= n; i++) {
+            name = order[i]
+            if (pcnt[name] + cnt[name] == 0) continue
+            printf "<span size=\"large\" weight=\"bold\" foreground=\"#ff8f40\">── %s ──</span>\n", xmlesc(name)
+            for (j = 1; j <= pcnt[name]; j++) {
+                printf "<span foreground=\"#78a9ff\">%-35s</span>  %s\n", xmlesc(pkey[name, j]), xmlesc(pdsc[name, j])
+            }
+            for (j = 1; j <= cnt[name]; j++) {
+                printf "<span foreground=\"#78a9ff\">%-35s</span>  %s\n", xmlesc(rkey[name, j]), xmlesc(rdsc[name, j])
+            }
+        }
+    }
+' "$KEYSTXT")
+
+echo "$rows" | rofi -dmenu -markup-rows -i -p "Mousebindings" \
+    -line-padding 4 -hide-scrollbar -theme "$THEME"
