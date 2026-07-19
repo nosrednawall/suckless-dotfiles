@@ -8,6 +8,7 @@
 # === HELP ===
 Super + space            	!Rofi help dwm
 Super + Shift + space    	Rofi help mouse dwm
+Super + Alt   + space    	Rofi help emacs
 
 # === LAUNCH ===
 Super + Shift + Return	!Terminal (st)

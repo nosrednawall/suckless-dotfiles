@@ -6,17 +6,25 @@
 * {
     font:   "Montserrat 12";
 
-    bg0:    #002b36E6;
-    bg1:    #002b3680;
-    bg2:    #073642E6;
+    bg0:    #282828E6;
+    bg1:    #28282880;
+    bg2:    #3c3836E6;
 
-    fg0:    #268bd2;
-    fg1:    #839496;
-    fg2:    #eee8d580;
+    fg0:    #458588;
+    fg1:    #ebdbb2;
+    fg2:    #fbf1c780;
 
-    background-color:   #002b36E6;
+    background-color:   #282828E6;
     text-color:         @fg0;
-    accent: #85990020;
+    accent: #689d6a20;
+
+    entry-fg:   @fg2;
+    prompt-fg:  @fg1;
+
+    bg: @bg2;
+    fg: @fg2;
+    urgent: @fg2;
+
     margin:     0;
     padding:    0;
     spacing:    0;

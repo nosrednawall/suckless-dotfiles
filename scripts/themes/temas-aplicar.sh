@@ -575,6 +575,14 @@ cat > "$ROFI_COLORS_RASI" <<EOF
     background-color:   ${normbgcolor}E6;
     text-color:         @fg0;
     accent: ${selbordercolor}20;
+
+    entry-fg:   @fg2;
+    prompt-fg:  @fg1;
+
+    bg: @bg2;
+    fg: @fg2;
+    urgent: @fg2;
+
     margin:     0;
     padding:    0;
     spacing:    0;
