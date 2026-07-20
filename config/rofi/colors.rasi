@@ -1,30 +1,30 @@
 /**
- *  Vaporwave Dark Colors
+ *  Solarized Dark Colors
  * Para ser carregado via @import em themes
  **/
 
 * {
     /* Cores base Gruvbox Light */
-    bg0:    #0d0b1aE6;
-    bg1:    #1a1630;
-    bg2:    #2d1f4a;
-    bg3:    #4a2b6b;
-    bg4:    #6b3f8a;
+    bg0:    #002b36E6;
+    bg1:    #073642;
+    bg2:    #586e75;
+    bg3:    #657b83;
+    bg4:    #839496;
 
-    fg0:    #ff71ce;
-    fg1:    #ff85d4;
-    fg2:    #ff99da;
-    fg3:    #ffadc9;
-    fg4:    #ffc1c9;
+    fg0:    #fdf6e3;
+    fg1:    #eee8d5;
+    fg2:    #93a1a1;
+    fg3:    #839496;
+    fg4:    #657b83;
 
-    red:    #ff5555;
-    green:  #50fa7b;
-    yellow: #f1fa8c;
-    blue:   #01cdfe;
-    purple: #b967ff;
-    aqua:   #ff6bde;
-    orange: #ff9f1c;
-    gray:   #4a3b6b;
+    red:    #dc322f;
+    green:  #859900;
+    yellow: #b58900;
+    blue:   #268bd2;
+    purple: #6c71c4;
+    aqua:   #2aa198;
+    orange: #cb4b16;
+    gray:   #586e75;
 
     /* Cores específicas para Rofi */
     background-color:   @bg0;
