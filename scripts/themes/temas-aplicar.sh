@@ -555,6 +555,28 @@ slock.failed  : $slock_failed
 slock.capslock: $slock_capslock
 slock.blocks  : $slock_blocks
 slock.bg_image: $WALLPAPER_LIGHTDM
+
+! ==========================================
+! CORES COMPLETAS DO TABBED
+! ==========================================
+tabbed.font: Caskaydia Mono Nerd Font:size=14:style=Regular:antialias=true:pixelsize=15
+tabbed.color0: $dmenu_background
+tabbed.color1: $dmenu_foreground
+tabbed.color4: $dmenu_selbackground
+tabbed.color7: $dmenu_selforeground
+tabbed.color2: $dmenu_selhlbackground
+tabbed.color3: $dmenu_selhlforeground
+tabbed.before: <
+tabbed.after: >
+tabbed.titletrim: ...
+tabbed.tabwidth: 200
+tabbed.foreground: 1
+tabbed.urgentswitch: 0
+tabbed.newposition: 0
+tabbed.npisrelative: 0
+tabbed.barheight: 15
+
+
 EOF
 
     check_error "Falha ao gerar .Xresources" $LINENO
@@ -677,6 +699,8 @@ apply_gtk_settings() {
         sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$GTK_PREFER_DARK_MODE/" ~/.config/gtk-4.0/settings.ini
     fi
 
+    pkill xsettingsd 2>/dev/null || true
+    xsettingsd >/dev/null 2>&1 &
 
     debug_log "✅ GTK configurado"
 }
@@ -744,7 +768,7 @@ next_wallpaper() {
     if [ -d "$wallpaper_dir" ]; then
         local wallpapers_list=$(find "$wallpaper_dir" -type f \( -iname \*.jpg -o -iname \*.png -o -iname \*.jpeg \) 2>/dev/null)
         local first_wallpaper=$(find "$wallpaper_dir" -type f \( -iname \*.jpg -o -iname \*.png -o -iname \*.jpeg \) 2>/dev/null | head -n 1)
-        debug_log "   Lista de wallpapers: $wallpapers_list"
+
         for wallpaper in $wallpapers_list; do
 
             if [[ "$saida" == "1" ]]; then
@@ -757,6 +781,38 @@ next_wallpaper() {
             if [ -f "$wallpaper" ] && [[ "$wallpaper" == "$current_wallpaper" ]]; then
                 saida=1
             fi
+        done
+
+        debug_log "   Selecionando o primeiro wallpaper da lista: $first_wallpaper"
+        feh --bg-fill "$first_wallpaper" &
+        exit 0
+    else
+        debug_log "   ⚠️ Diretório não existe: $wallpaper_dir"
+    fi
+    exit 1
+
+}
+
+prev_wallpaper() {
+    local wallpaper_dir="$HOME/.wallpapers/${THEME_MODE}/${COLOR_MODE}"
+    debug_log "   Procurando em: $wallpaper_dir"
+    local current_wallpaper=$(grep -oP "'\K[^']+(?=')" ~/.fehbg 2>/dev/null)
+
+    debug_log "   Wallpaper atual: $current_wallpaper"
+    if [ -d "$wallpaper_dir" ]; then
+        local wallpapers_list=$(find "$wallpaper_dir" -type f \( -iname \*.jpg -o -iname \*.png -o -iname \*.jpeg \) 2>/dev/null)
+        local first_wallpaper=$(find "$wallpaper_dir" -type f \( -iname \*.jpg -o -iname \*.png -o -iname \*.jpeg \) 2>/dev/null | head -n 1)
+        local anterior=""
+
+        for wallpaper in $wallpapers_list; do
+
+            # No próximo loop vai apricar o próximo wallpaper
+            if [ -f "$wallpaper" ] && [[ "$wallpaper" == "$current_wallpaper" ]]; then
+                debug_log "   Wallpaper Selecionado é: $anterior"
+                feh --bg-fill "$anterior" &
+                exit 0
+            fi
+                anterior="$wallpaper"
         done
 
         debug_log "   Selecionando o primeiro wallpaper da lista: $first_wallpaper"
@@ -849,6 +905,11 @@ main() {
         next_wallpaper
         exit 0
     fi
+    if [[ "$choice" == "Anterior"* ]]; then
+        source ~/.theme_selected
+        prev_wallpaper
+        exit 0
+    fi
     if [[ "$choice" == "Pywal" ]]; then
         debug_log "🎨 Modo pywal detectado"
         pywal_flag="1"
@@ -909,7 +970,12 @@ main() {
     kill -10 $(pidof dwmblocks)
 
     # atualiza as cores do st
-    killall -USR1 st
+    #killall -USR1 st
+    pidof st | xargs kill -s USR1
+
+    # atualiza as cores do tabbed
+    pidof tabbed | xargs kill -s USR1
+
     debug_log "✅ Script finalizado com sucesso!"
     debug_log "=========================================="
 }

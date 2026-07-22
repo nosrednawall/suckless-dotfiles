@@ -289,7 +289,7 @@ static const char *dmenucmd[] = {
 	NULL
 };
 static const char *termcmd[]  = { "st", NULL };
-
+static const char *tabbedtermcmd[] = {"tabbed", "-r 2", "st", "-w", "''", NULL };
 static const Key keys[] = {
 	/* modifier                     key            function                argument */
 
@@ -301,6 +301,11 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return,     spawn,                  {.v = termcmd } },
 	{ MODKEY,                       XK_b,          togglebar,              {0} },
   { MODKEY,                       XK_Tab,        view,                   {0} },
+
+  /* ===== TABS ===== */
+  { Mod1Mask|ShiftMask,           XK_Return,     spawn,                  {.v = tabbedtermcmd } },
+  { MODKEY,                       XK_t,	  	   spawn,                  SHCMD(PATH("dwm/dwmtabs attach")) },
+  { MODKEY|ControlMask,           XK_t,	  	   spawn,                  SHCMD(PATH("dwm/dwmtabs detach")) },
 
   /* ===== NAVEGAÇÃO ENTRE JANELAS ===== */
 	{ MODKEY,                       XK_j,          focusstack,             {.i = +1 } },

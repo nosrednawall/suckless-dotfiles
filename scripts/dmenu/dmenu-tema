@@ -21,6 +21,7 @@ generate_theme_list() {
     echo "  Aleatório"
     echo "  Selecionar"
     echo "  Próximo"
+    echo "  Anterior"
     echo "Dark :"
     list_themes_by_mode "Dark"
     echo "Light :"
