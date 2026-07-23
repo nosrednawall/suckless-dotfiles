@@ -111,7 +111,9 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,     XK_h,         rotate,      { .i = -1 } },
   { MODKEY|ShiftMask,     XK_Left,      rotate,      { .i = -1 } },
 	{ MODKEY|ShiftMask,     XK_j,         movetab,     { .i = -1 } },
+  { MODKEY|ShiftMask,     XK_Down,      movetab,     { .i = -1 } },
 	{ MODKEY|ShiftMask,     XK_k,         movetab,     { .i = +1 } },
+  { MODKEY|ShiftMask,     XK_Up,        movetab,     { .i = +1 } },
 	{ MODKEY,               XK_Tab,       rotate,      { .i = +1 } },
 
 	{ MODKEY,               XK_grave,     spawn,       SETPROP("_TABBED_SELECT_TAB") },

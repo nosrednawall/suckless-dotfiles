@@ -47,6 +47,22 @@ Super + Control + z	    Toggle hide all
 Super + Control + s	    Unhide all
 Super + Enter	            Toggle zoom master
 
+# === TABS ===
+Super + t	                !Create tab on focus app
+Super + Control + t	    remove app from tab
+Control + Shift + l	        Focus next tab
+Control + Shift + Right	    Focus next tab
+Control + Shift + h	        Focus previous tab
+Control + Shift + Left	    Focus previous tab
+Control + Shift + j	        Move tab previous position
+Control + Shift + k	        Move tab next position
+Control + Tab	            Focus next tab
+Control + Apostrophe	    Dmenu Tabs list
+Control + q 	            Close Tab
+Control + 1...9 	        Jumps to number tab
+F11	                    Toggle Fullscreen
+Alt + Shift + Return 	    Open St in new Tab
+
 # === LAYOUT ===
 Super + F1	                !Layout:  []= tile
 Super + F2	                Layout:  ><> floating

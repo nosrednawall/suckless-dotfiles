@@ -533,7 +533,7 @@ dwm.tag9: $COLOR_9
 ! ==========================================
 ! CORES COMPLETAS DO DMENU
 ! ==========================================
-dmenu.font: Caskaydia Mono Nerd Font:size=14:style=Regular:antialias=true:pixelsize=15
+dmenu.font: Iosevka Term:pixelsize=18:antialias=true:autohint=true:style=Regular
 dmenu.background:       $dmenu_background
 dmenu.foreground:       $dmenu_foreground
 dmenu.selbackground:    $dmenu_selbackground
@@ -559,7 +559,7 @@ slock.bg_image: $WALLPAPER_LIGHTDM
 ! ==========================================
 ! CORES COMPLETAS DO TABBED
 ! ==========================================
-tabbed.font: Caskaydia Mono Nerd Font:size=14:style=Regular:antialias=true:pixelsize=15
+tabbed.font: Iosevka Term:pixelsize=18:antialias=true:autohint=true:style=Regular
 tabbed.color0: $dmenu_background
 tabbed.color1: $dmenu_foreground
 tabbed.color4: $dmenu_selbackground
@@ -699,8 +699,13 @@ apply_gtk_settings() {
         sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$GTK_PREFER_DARK_MODE/" ~/.config/gtk-4.0/settings.ini
     fi
 
-    pkill xsettingsd 2>/dev/null || true
-    xsettingsd >/dev/null 2>&1 &
+    # Set theme and icons
+    xfconf-query -c xsettings -p /Net/ThemeName -s "$THEME_GTK"
+    xfconf-query -c xfwm4 -p /general/theme -s "$THEME_GTK"
+    xfconf-query -c xsettings -p /Net/IconThemeName -s "$THEME_ICON"
+
+    # Método 3: Forçar refresh via xprop (para aplicações X11)
+    xprop -root -f _GTK_THEME_VARIANT 8u -set _GTK_THEME_VARIANT "$THEME_GTK" 2>/dev/null
 
     debug_log "✅ GTK configurado"
 }

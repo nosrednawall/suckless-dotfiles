@@ -1,30 +1,30 @@
 /**
- *  Gruvbox Dark Colors
+ *  Nord Dark Colors
  * Para ser carregado via @import em themes
  **/
 
 * {
     /* Cores base Gruvbox Light */
-    bg0:    #282828E6;
-    bg1:    #3c3836;
-    bg2:    #504945;
-    bg3:    #665c54;
-    bg4:    #7c6f64;
+    bg0:    #2e3440E6;
+    bg1:    #3b4252;
+    bg2:    #434c5e;
+    bg3:    #4c566a;
+    bg4:    #5e6a7e;
 
-    fg0:    #fbf1c7;
-    fg1:    #ebdbb2;
-    fg2:    #d5c4a1;
-    fg3:    #bdae93;
-    fg4:    #a89984;
+    fg0:    #eceff4;
+    fg1:    #e5e9f0;
+    fg2:    #d8dee9;
+    fg3:    #cbd3e2;
+    fg4:    #bcc6d9;
 
-    red:    #cc241d;
-    green:  #98971a;
-    yellow: #d79921;
-    blue:   #458588;
-    purple: #b16286;
-    aqua:   #689d6a;
-    orange: #d65d0e;
-    gray:   #928374;
+    red:    #bf616a;
+    green:  #a3be8c;
+    yellow: #ebcb8b;
+    blue:   #81a1c1;
+    purple: #b48ead;
+    aqua:   #88c0d0;
+    orange: #d08770;
+    gray:   #6e7a8a;
 
     /* Cores específicas para Rofi */
     background-color:   @bg0;
