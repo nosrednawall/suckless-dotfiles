@@ -119,7 +119,7 @@ PACKAGES_FONTS=(
 )
 
 PACKAGES_TERMINAL=(
-    curl pv htop btop xdotool libnotify ripgrep fd findutils
+    zsh fzf zoxide curl pv htop btop xdotool libnotify ripgrep fd findutils
     calcurse python-oauth2client python-httplib2 pulsemixer
     less newsboat jq bc gd ueberzugpp xclip
 )
@@ -614,3 +614,22 @@ mkdir -p ~/Imagens/Screenshoots
 
 # Setup xdg-mime applications
 xdg-settings set default-web-browser firefox.desktop
+
+# Setup zsh as default shell
+chsh -s $(which zsh)
+
+# create folders for zsh
+mkdir -p ~/.local/state/zsh
+mkdir -p ~/.cache/zsh
+
+sudo cat > /etc/zsh/zshenv <<EOF
+if [[ -z "$XDG_CONFIG_HOME" ]]
+then
+        export XDG_CONFIG_HOME="$HOME/.config"
+fi
+
+if [[ -d "$XDG_CONFIG_HOME/zsh" ]]
+then
+        export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+fi
+EOF
