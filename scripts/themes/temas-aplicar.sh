@@ -559,7 +559,7 @@ slock.bg_image: $WALLPAPER_LIGHTDM
 ! ==========================================
 ! CORES COMPLETAS DO TABBED
 ! ==========================================
-tabbed.font: Iosevka Term:pixelsize=18:antialias=true:autohint=true:style=Regular
+tabbed.font: Iosevka Term:pixelsize=15:antialias=true:autohint=true:style=Regular
 tabbed.color0: $dmenu_background
 tabbed.color1: $dmenu_foreground
 tabbed.color4: $dmenu_selbackground
@@ -574,7 +574,7 @@ tabbed.foreground: 1
 tabbed.urgentswitch: 0
 tabbed.newposition: 0
 tabbed.npisrelative: 0
-tabbed.barheight: 15
+tabbed.barheight: 20
 
 
 EOF

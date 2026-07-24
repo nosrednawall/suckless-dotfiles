@@ -194,6 +194,10 @@ static const Rule rules[] = {
 
  //Anki
  RULE(.instance = "anki", .title = "Adicionar", .tags = 0, .isfloating = 1)
+
+// Virtualbox
+ RULE(.instance = "VirtualBoxVM", .title = "archlinux - Teclado de Tela", .tags = 0, .isfloating = 1)
+ RULE(.instance = "VirtualBox", .title = "New Virtual Machine", .tags = 0, .isfloating = 1)
 };
 
 static const MonitorRule monrules[] = {
