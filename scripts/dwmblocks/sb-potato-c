@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
 
-# Carrega o tema
-source $HOME/.theme_selected
-
-
 # Carrega função para aplicar o tema e o tema de cores
 source ~/.config/suckless/scripts/dwmblocks/sb-carrega-tema-dwmblocks
 
 # funcoes cliclaveis
 case $BUTTON in
-    1) potctl -t ;;
+    1) potctl -t ;;                                                 # Toggle pause/start
     3) $HOME/.config/suckless/scripts/dmenu/dmenu-pomodoro ;;
-    4) potctl -i ;;
-    5) potctl -d ;;
-	6) setsid -f st -e emacs -nw "$0" ;;
-    8) potctl -s ;;
-    9) potctl -I ;;
-    10) potctl -D ;;
+    4) potctl -i ;;                                                 # Avanca tempo
+    5) potctl -d ;;                                                 # recua tempo
+	6) setsid -f st -e emacs -nw "$0" ;;                            # abre editor
+    8) potctl -s ;;                                                 # avanca quantidade de pomodoros realizados
+    9) potctl -I ;;                                                 # diminui quantidade de realizados
+    10) potctl -D ;;                                                # Pula para o próximo estádio
 esac
 
 # Verifica se tem algum pomodoro rodando
@@ -71,9 +67,7 @@ else
 
     # Gera som quando finaliza o modo
     if [ "00:01" = "$pomodoro_minutos" ]; then
-        # ffplay -nodisp -autoexit -t 3 /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga &
-        # $HOME/.config/suckless/scripts/others/som
-        diretorio="$HOME/.config/suckless/assets/audio"
+        diretorio="$HOME/.config/suckless/sounds/audio"
         
         # Encontra todos os arquivos MP3 no diretório
         arquivos_mp3=("$diretorio"/*.mp3)
@@ -90,7 +84,6 @@ else
     # retorno no dwmblocks
     output=$(aplicar_tema "$icone" "$pomodoro_minutos  $pomodoro_cont" "$color" "$color2")
     echo "$output"
-    #echo "^b$color^^c$COLOR_BACKGROUND ^ $icone ^d^^c$COLOR_BACKGROUND^^b$color2^ $pomodoro_minutos  $pomodoro_cont ^d^ "
 fi
 
 exit 0

@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+# skippy-dwm.sh - Integração do skippy-xd com dwm
+# Versão para o fork do felixfung
+
+CONFIG_FILE="$HOME/.config/skippy-xd/skippy-xd.conf"
+SKIPPY_BIN="skippy-xd"
+MODE="${1:-expose}"  # Padrão: expose, pode ser: switch, expose, paging
+
+# Colors
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+die() { echo -e "${RED}ERROR: $*${NC}" >&2; exit 1; }
+warn() { echo -e "${YELLOW}WARNING: $*${NC}" >&2; }
+msg() { echo -e "${CYAN}$*${NC}"; }
+
+
+# Cores para notificações (opcional)
+COLOR_GREEN="#88C0D0"
+COLOR_RED="#BF616A"
+
+# Verifica se o compositor está rodando
+if ! pgrep -x "picom" > /dev/null && ! pgrep -x "compton" > /dev/null; then
+    notify-send -u critical "Skippy-XD" "Compositor não está rodando!\nInicie com: picom -b &"
+    exit 1
+fi
+
+# Verifica instalação
+if ! command -v "$SKIPPY_BIN" &> /dev/null; then
+    notify-send -u critical "Skippy-XD" "Não está instalado!\nCompile de: https://github.com/felixfung/skippy-xd"
+    exit 1
+fi
+
+# Função para iniciar o daemon
+start_daemon() {
+    if [ -f "$CONFIG_FILE" ]; then
+        "$SKIPPY_BIN" --config "$CONFIG_FILE" --start-daemon &
+    else
+        "$SKIPPY_BIN" --start-daemon &
+    fi
+    sleep 0.3
+}
+
+# Função para ativar o modo escolhido
+activate_mode() {
+    case "$MODE" in
+        switch)
+            "$SKIPPY_BIN" --switch
+            ;;
+        paging)
+            "$SKIPPY_BIN" --paging
+            ;;
+        expose|*)
+            "$SKIPPY_BIN" --expose
+            ;;
+    esac
+}
+
+# Verifica se o daemon está rodando
+if pgrep -x "$SKIPPY_BIN" > /dev/null; then
+    # Toggle: se já estiver ativo, desativa; senão, ativa
+    "$SKIPPY_BIN" --toggle
+else
+    # Inicia o daemon e ativa o modo
+    start_daemon
+    activate_mode
+fi

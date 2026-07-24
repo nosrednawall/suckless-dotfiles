@@ -119,7 +119,7 @@ PACKAGES_FONTS=(
 )
 
 PACKAGES_TERMINAL=(
-    zsh fzf zoxide curl pv htop btop xdotool libnotify ripgrep fd findutils
+    zsh fzf zoxide starship lf curl pv htop btop xdotool libnotify ripgrep fd findutils
     calcurse python-oauth2client python-httplib2 pulsemixer
     less newsboat jq bc gd ueberzugpp xclip
 )

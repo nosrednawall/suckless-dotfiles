@@ -1,0 +1,106 @@
+/* Skippy-xd
+ *
+ * Copyright (C) 2004 Hyriand <hyriand@thegraveyard.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef SKIPPY_CLIENT_H
+#define SKIPPY_CLIENT_H
+
+typedef struct {
+	Window window;
+	int x, y;
+	int width, height;
+	XRenderPictFormat *format;
+} SkippyWindow;
+
+#define SKIPPYWINT_INIT { .window = None }
+
+struct _Tooltip;
+
+struct _clientwin_t {
+	MainWin *mainwin;
+
+	client_disp_mode_t mode;
+	Window wid_client;
+	SkippyWindow src, src0;
+	bool redirected;
+	Pixmap cpixmap;
+	pictw_t *pict_filled;
+	pictw_t *icon_pict;
+	pictw_t *icon_pict_filled;
+	pictw_t *icon_pict_filler;
+
+	SkippyWindow mini;
+	int pixmap_width, pixmap_height;
+
+	Pixmap pixmap;
+	Picture origin, destination, shadow;
+	Damage damage;
+	float factor;
+
+	bool focused;
+	bool multiselect;
+	bool damaged;
+	bool mapped;
+
+	bool zombie;
+	wintype_t paneltype;
+	/* XserverRegion repair; */
+	
+	/* These are virtual positions set by the layout routine */
+	int x, y;
+	float fx, fy, fx2, fy2, vx, vy;
+	struct _Tooltip *tooltip;
+    int slots;
+};
+
+#define CLIENTWT_INIT { \
+	.src = SKIPPYWINT_INIT, \
+	.mini = SKIPPYWINT_INIT, \
+	.mainwin = NULL \
+}
+
+client_disp_mode_t
+clientwin_get_disp_mode(session_t *ps, ClientWin *cw, bool isViewable);
+
+static inline void
+clientwin_free_res2(session_t *ps, ClientWin *cw) {
+	free_pictw(ps, &cw->icon_pict_filled);
+	free_pictw(ps, &cw->pict_filled);
+}
+
+int clientwin_validate_panel(dlist *, void *);
+int clientwin_filter_func(dlist *, void *);
+ClientWin *clientwin_create(MainWin *, Window);
+void clientwin_destroy(ClientWin *, bool destroyed);
+void clientwin_prepmove(ClientWin *);
+void clientwin_move(ClientWin *, float, int, int, float);
+void clientwin_map(ClientWin *);
+void clientwin_unmap(ClientWin *);
+int clientwin_handle(ClientWin *, XEvent *);
+int clientwin_cmp_func(dlist *, void*);
+bool clientwin_update(ClientWin *cw);
+bool clientwin_update2(ClientWin *cw);
+bool clientwin_update3(ClientWin *cw);
+int clientwin_check_group_leader_func(dlist *l, void *data);
+void clientwin_render(ClientWin *);
+void clientwin_schedule_repair(ClientWin *cw, XRectangle *area);
+void clientwin_repair(ClientWin *cw);
+void clientwin_tooltip(ClientWin *cw);
+void childwin_focus(ClientWin *cw);
+
+#endif /* SKIPPY_CLIENT_H */

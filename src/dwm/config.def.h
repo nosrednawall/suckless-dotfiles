@@ -290,6 +290,7 @@ static const char *dmenucmd[] = {
 };
 static const char *termcmd[]  = { "st", NULL };
 static const char *tabbedtermcmd[] = {"tabbed", "-r 2", "st", "-w", "''", NULL };
+
 static const Key keys[] = {
 	/* modifier                     key            function                argument */
 
@@ -301,6 +302,9 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return,     spawn,                  {.v = termcmd } },
 	{ MODKEY,                       XK_b,          togglebar,              {0} },
   { MODKEY,                       XK_Tab,        view,                   {0} },
+  { MODKEY,                       XK_Tab,        view,                   {0} },
+  { Mod1Mask,                     XK_Tab,        spawn,                  SHCMD(PATH("dwm/dwm-alt-tab")) },
+
 
   /* ===== TABS ===== */
   { Mod1Mask|ShiftMask,           XK_Return,     spawn,                  {.v = tabbedtermcmd } },
